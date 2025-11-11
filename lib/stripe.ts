@@ -1,13 +1,19 @@
 import Stripe from "stripe"
 
-if (!process.env.STRIPE_SECRET_KEY) {
-  throw new Error("STRIPE_SECRET_KEY is not defined")
-}
+// Utiliser une clé factice pendant le build si non définie
+const stripeSecretKey = process.env.STRIPE_SECRET_KEY || "sk_test_dummy_key_for_build"
 
-export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+export const stripe = new Stripe(stripeSecretKey, {
   apiVersion: "2025-10-29.clover",
   typescript: true,
 })
+
+// Fonction helper pour valider que Stripe est configuré
+function ensureStripeConfigured() {
+  if (!process.env.STRIPE_SECRET_KEY) {
+    throw new Error("STRIPE_SECRET_KEY is not defined. Please set it in your environment variables.")
+  }
+}
 
 // Helper pour créer une session de paiement pour une réservation
 export async function createReservationCheckoutSession({
@@ -23,6 +29,8 @@ export async function createReservationCheckoutSession({
   successUrl: string
   cancelUrl: string
 }) {
+  ensureStripeConfigured()
+
   const session = await stripe.checkout.sessions.create({
     payment_method_types: ["card"],
     line_items: [
@@ -71,6 +79,8 @@ export async function createOrderCheckoutSession({
   successUrl: string
   cancelUrl: string
 }) {
+  ensureStripeConfigured()
+
   const session = await stripe.checkout.sessions.create({
     payment_method_types: ["card"],
     line_items: items.map((item) => ({
@@ -100,6 +110,8 @@ export async function createOrderCheckoutSession({
 
 // Helper pour créer un remboursement
 export async function createRefund(paymentIntentId: string, amount?: number) {
+  ensureStripeConfigured()
+
   const refund = await stripe.refunds.create({
     payment_intent: paymentIntentId,
     amount: amount ? Math.round(amount * 100) : undefined,
@@ -110,6 +122,8 @@ export async function createRefund(paymentIntentId: string, amount?: number) {
 
 // Helper pour récupérer une session de paiement
 export async function retrieveCheckoutSession(sessionId: string) {
+  ensureStripeConfigured()
+
   const session = await stripe.checkout.sessions.retrieve(sessionId)
   return session
 }
