@@ -182,9 +182,9 @@ export default function CommandesPage() {
           </div>
           <button
             onClick={() => {
-              const url = statusFilter === "all"
+              const url = filter === "all"
                 ? "/api/admin/export/orders"
-                : `/api/admin/export/orders?status=${statusFilter}`
+                : `/api/admin/export/orders?status=${filter}`
               window.location.href = url
             }}
             className="inline-flex items-center px-4 py-2 rounded-lg bg-corsican-maquis-600 text-white font-semibold hover:bg-corsican-maquis-700 transition-all"
