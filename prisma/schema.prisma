@@ -218,26 +218,25 @@ model OrderItem {
 // ============================================
 
 model PromoCode {
-  id          String    @id @default(cuid())
-  code        String    @unique
-  description String?
-  discountType DiscountType
-  discountValue Float
-  minPurchase Float?
-  maxUses     Int?
-  usedCount   Int       @default(0)
-  validFrom   DateTime
-  validUntil  DateTime
-  active      Boolean   @default(true)
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  id             String    @id @default(cuid())
+  code           String    @unique
+  type           PromoType
+  value          Float
+  minOrderAmount Float?
+  maxUses        Int?
+  currentUses    Int       @default(0)
+  validFrom      DateTime?
+  validUntil     DateTime?
+  active         Boolean   @default(true)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
 
   @@map("promo_codes")
 }
 
-enum DiscountType {
+enum PromoType {
   PERCENTAGE
-  FIXED_AMOUNT
+  FIXED
 }
 
 // ============================================
