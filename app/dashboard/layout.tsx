@@ -85,6 +85,12 @@ export default async function DashboardLayout({
               📦 Commandes
             </Link>
             <Link
+              href="/dashboard/promotions"
+              className="block px-4 py-2 text-stone-700 hover:bg-stone-100 rounded-lg transition"
+            >
+              🎫 Codes promo
+            </Link>
+            <Link
               href="/dashboard/clients"
               className="block px-4 py-2 text-stone-700 hover:bg-stone-100 rounded-lg transition"
             >
