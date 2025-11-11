@@ -293,7 +293,9 @@ export default function TestimonialsPage() {
                       {testimonial.customerName}
                     </h3>
                     {testimonial.verified && (
-                      <ShieldCheck className="h-4 w-4 text-green-600" title="Vérifié" />
+                      <div title="Vérifié">
+                        <ShieldCheck className="h-4 w-4 text-green-600" />
+                      </div>
                     )}
                   </div>
                   {renderStars(testimonial.rating)}
