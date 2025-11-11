@@ -76,3 +76,40 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Custom styles for react-day-picker calendar */
+.rdp {
+  --rdp-cell-size: 45px;
+  --rdp-accent-color: #bfa094;
+  --rdp-background-color: #f2e8e5;
+  margin: 0;
+}
+
+.rdp-day_selected {
+  background-color: #bfa094 !important;
+  color: white !important;
+}
+
+.rdp-day_selected:hover {
+  background-color: #a18072 !important;
+}
+
+.rdp-day_today {
+  font-weight: bold;
+  color: #846358;
+}
+
+.rdp-button:hover:not([disabled]):not(.rdp-day_selected) {
+  background-color: #f2e8e5;
+}
+
+.rdp-button[disabled] {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.rdp-caption {
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: #6f5347;
+}
