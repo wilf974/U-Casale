@@ -4,7 +4,7 @@ import { auth } from "@/lib/auth"
 
 export async function GET(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await auth()
@@ -16,8 +16,10 @@ export async function GET(
       )
     }
 
+    const { id } = await params
+
     const order = await prisma.order.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         customer: true,
         items: {
@@ -47,7 +49,7 @@ export async function GET(
 
 export async function PATCH(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await auth()
@@ -59,12 +61,13 @@ export async function PATCH(
       )
     }
 
+    const { id } = await params
     const body = await req.json()
     const { status, trackingNumber, notes } = body
 
     // Check if order exists
     const existingOrder = await prisma.order.findUnique({
-      where: { id: params.id },
+      where: { id },
     })
 
     if (!existingOrder) {
@@ -81,7 +84,7 @@ export async function PATCH(
     if (notes !== undefined) updateData.notes = notes?.trim() || null
 
     const order = await prisma.order.update({
-      where: { id: params.id },
+      where: { id },
       data: updateData,
       include: {
         customer: true,

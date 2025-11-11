@@ -4,7 +4,7 @@ import { auth } from "@/lib/auth"
 
 export async function GET(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await auth()
@@ -16,8 +16,10 @@ export async function GET(
       )
     }
 
+    const { id } = await params
+
     const product = await prisma.product.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         category: true,
       },
@@ -42,7 +44,7 @@ export async function GET(
 
 export async function PATCH(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await auth()
@@ -54,6 +56,7 @@ export async function PATCH(
       )
     }
 
+    const { id } = await params
     const body = await req.json()
     const {
       name,
@@ -70,7 +73,7 @@ export async function PATCH(
 
     // Check if product exists
     const existingProduct = await prisma.product.findUnique({
-      where: { id: params.id },
+      where: { id },
     })
 
     if (!existingProduct) {
@@ -122,7 +125,7 @@ export async function PATCH(
     if (metaDescription !== undefined) updateData.metaDescription = metaDescription?.trim() || null
 
     const product = await prisma.product.update({
-      where: { id: params.id },
+      where: { id },
       data: updateData,
       include: {
         category: true,
@@ -144,7 +147,7 @@ export async function PATCH(
 
 export async function DELETE(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await auth()
@@ -156,9 +159,11 @@ export async function DELETE(
       )
     }
 
+    const { id } = await params
+
     // Check if product exists
     const product = await prisma.product.findUnique({
-      where: { id: params.id },
+      where: { id },
     })
 
     if (!product) {
@@ -170,7 +175,7 @@ export async function DELETE(
 
     // Check if product is in any orders
     const ordersWithProduct = await prisma.orderItem.count({
-      where: { productId: params.id },
+      where: { productId: id },
     })
 
     if (ordersWithProduct > 0) {
@@ -181,7 +186,7 @@ export async function DELETE(
     }
 
     await prisma.product.delete({
-      where: { id: params.id },
+      where: { id },
     })
 
     return NextResponse.json({

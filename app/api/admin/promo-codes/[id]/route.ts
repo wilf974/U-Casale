@@ -4,7 +4,7 @@ import { auth } from "@/lib/auth"
 
 export async function GET(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await auth()
@@ -16,8 +16,10 @@ export async function GET(
       )
     }
 
+    const { id } = await params
+
     const promoCode = await prisma.promoCode.findUnique({
-      where: { id: params.id },
+      where: { id },
     })
 
     if (!promoCode) {
@@ -39,7 +41,7 @@ export async function GET(
 
 export async function PATCH(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await auth()
@@ -51,6 +53,7 @@ export async function PATCH(
       )
     }
 
+    const { id } = await params
     const body = await req.json()
     const {
       code,
@@ -65,7 +68,7 @@ export async function PATCH(
 
     // Check if promo code exists
     const existingPromoCode = await prisma.promoCode.findUnique({
-      where: { id: params.id },
+      where: { id },
     })
 
     if (!existingPromoCode) {
@@ -123,7 +126,7 @@ export async function PATCH(
     if (active !== undefined) updateData.active = active
 
     const promoCode = await prisma.promoCode.update({
-      where: { id: params.id },
+      where: { id },
       data: updateData,
     })
 
@@ -142,7 +145,7 @@ export async function PATCH(
 
 export async function DELETE(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await auth()
@@ -154,9 +157,11 @@ export async function DELETE(
       )
     }
 
+    const { id } = await params
+
     // Check if promo code exists
     const promoCode = await prisma.promoCode.findUnique({
-      where: { id: params.id },
+      where: { id },
     })
 
     if (!promoCode) {
@@ -167,7 +172,7 @@ export async function DELETE(
     }
 
     await prisma.promoCode.delete({
-      where: { id: params.id },
+      where: { id },
     })
 
     return NextResponse.json({

@@ -4,7 +4,7 @@ import { auth } from "@/lib/auth"
 
 export async function GET(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await auth()
@@ -16,8 +16,10 @@ export async function GET(
       )
     }
 
+    const { id } = await params
+
     const category = await prisma.category.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         _count: {
           select: { products: true },
@@ -44,7 +46,7 @@ export async function GET(
 
 export async function PATCH(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await auth()
@@ -56,12 +58,13 @@ export async function PATCH(
       )
     }
 
+    const { id } = await params
     const body = await req.json()
     const { name, slug, description, image } = body
 
     // Check if category exists
     const existingCategory = await prisma.category.findUnique({
-      where: { id: params.id },
+      where: { id },
     })
 
     if (!existingCategory) {
@@ -93,7 +96,7 @@ export async function PATCH(
     if (image !== undefined) updateData.image = image?.trim() || null
 
     const category = await prisma.category.update({
-      where: { id: params.id },
+      where: { id },
       data: updateData,
     })
 
@@ -112,7 +115,7 @@ export async function PATCH(
 
 export async function DELETE(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await auth()
@@ -124,9 +127,11 @@ export async function DELETE(
       )
     }
 
+    const { id } = await params
+
     // Check if category has products
     const category = await prisma.category.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         _count: {
           select: { products: true },
@@ -149,7 +154,7 @@ export async function DELETE(
     }
 
     await prisma.category.delete({
-      where: { id: params.id },
+      where: { id },
     })
 
     return NextResponse.json({
