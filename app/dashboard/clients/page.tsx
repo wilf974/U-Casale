@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Users, Mail, Phone, MapPin, ShoppingBag, Calendar, Search, Loader2, Eye, Trash2, Download } from "lucide-react"
+import { Users, Mail, Phone, MapPin, ShoppingBag, Calendar, Search, Loader2, Eye, Trash2, Download, Plus, Edit, X } from "lucide-react"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import Link from "next/link"
@@ -27,6 +27,19 @@ export default function ClientsPage() {
   const [customers, setCustomers] = useState<Customer[]>([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState("")
+  const [showModal, setShowModal] = useState(false)
+  const [editingCustomer, setEditingCustomer] = useState<Customer | null>(null)
+  const [saving, setSaving] = useState(false)
+  const [formData, setFormData] = useState({
+    email: "",
+    firstName: "",
+    lastName: "",
+    phone: "",
+    address: "",
+    city: "",
+    postalCode: "",
+    country: "France",
+  })
 
   useEffect(() => {
     fetchCustomers()
@@ -83,6 +96,73 @@ export default function ClientsPage() {
     }
   }
 
+  const handleOpenModal = (customer?: Customer) => {
+    if (customer) {
+      setEditingCustomer(customer)
+      setFormData({
+        email: customer.email,
+        firstName: customer.firstName,
+        lastName: customer.lastName,
+        phone: customer.phone || "",
+        address: customer.address || "",
+        city: customer.city || "",
+        postalCode: customer.postalCode || "",
+        country: customer.country || "France",
+      })
+    } else {
+      setEditingCustomer(null)
+      setFormData({
+        email: "",
+        firstName: "",
+        lastName: "",
+        phone: "",
+        address: "",
+        city: "",
+        postalCode: "",
+        country: "France",
+      })
+    }
+    setShowModal(true)
+  }
+
+  const handleCloseModal = () => {
+    setShowModal(false)
+    setEditingCustomer(null)
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+
+    try {
+      setSaving(true)
+
+      const url = editingCustomer
+        ? `/api/admin/customers/${editingCustomer.id}`
+        : "/api/admin/customers"
+
+      const response = await fetch(url, {
+        method: editingCustomer ? "PATCH" : "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      })
+
+      if (response.ok) {
+        await fetchCustomers()
+        handleCloseModal()
+      } else {
+        const data = await response.json()
+        alert(data.error || "Erreur lors de l'enregistrement")
+      }
+    } catch (error) {
+      console.error("Error saving customer:", error)
+      alert("Erreur lors de l'enregistrement")
+    } finally {
+      setSaving(false)
+    }
+  }
+
   const stats = {
     total: customers.length,
     withReservations: customers.filter(c => c._count.reservations > 0).length,
@@ -102,15 +182,24 @@ export default function ClientsPage() {
               Gérez tous les clients du site
             </p>
           </div>
-          <button
-            onClick={() => {
-              window.location.href = "/api/admin/export/customers"
-            }}
-            className="inline-flex items-center px-4 py-2 rounded-lg bg-corsican-maquis-600 text-white font-semibold hover:bg-corsican-maquis-700 transition-all"
-          >
-            <Download className="h-5 w-5 mr-2" />
-            Exporter CSV
-          </button>
+          <div className="flex items-center space-x-3">
+            <button
+              onClick={() => {
+                window.location.href = "/api/admin/export/customers"
+              }}
+              className="inline-flex items-center px-4 py-2 rounded-lg bg-corsican-maquis-600 text-white font-semibold hover:bg-corsican-maquis-700 transition-all"
+            >
+              <Download className="h-5 w-5 mr-2" />
+              Exporter CSV
+            </button>
+            <button
+              onClick={() => handleOpenModal()}
+              className="inline-flex items-center px-4 py-2 rounded-lg bg-corsican-clay-600 text-white font-semibold hover:bg-corsican-clay-700 transition-all"
+            >
+              <Plus className="h-5 w-5 mr-2" />
+              Ajouter un client
+            </button>
+          </div>
         </div>
 
         {/* Stats */}
@@ -266,6 +355,12 @@ export default function ClientsPage() {
                           <Eye className="h-4 w-4" />
                         </Link>
                         <button
+                          onClick={() => handleOpenModal(customer)}
+                          className="p-2 rounded-lg bg-blue-100 text-blue-700 hover:bg-blue-200 transition-colors"
+                        >
+                          <Edit className="h-4 w-4" />
+                        </button>
+                        <button
                           onClick={() => handleDelete(customer)}
                           className="p-2 rounded-lg bg-red-100 text-red-700 hover:bg-red-200 transition-colors"
                           disabled={customer._count.reservations > 0 || customer._count.orders > 0}
@@ -278,6 +373,154 @@ export default function ClientsPage() {
                 ))}
               </tbody>
             </table>
+          </div>
+        </div>
+      )}
+
+      {/* Modal */}
+      {showModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6 border-b border-corsican-clay-200 flex items-center justify-between">
+              <h2 className="text-2xl font-serif font-bold text-corsican-clay-900">
+                {editingCustomer ? "Modifier le client" : "Nouveau client"}
+              </h2>
+              <button
+                onClick={handleCloseModal}
+                className="p-2 hover:bg-corsican-clay-100 rounded-lg transition-colors"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSubmit} className="p-6 space-y-6">
+              <div className="grid md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-corsican-clay-700 mb-2">
+                    Prénom *
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.firstName}
+                    onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                    required
+                    className="w-full px-4 py-2 border border-corsican-clay-300 rounded-lg focus:ring-2 focus:ring-corsican-clay-500 focus:border-transparent"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-corsican-clay-700 mb-2">
+                    Nom *
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.lastName}
+                    onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                    required
+                    className="w-full px-4 py-2 border border-corsican-clay-300 rounded-lg focus:ring-2 focus:ring-corsican-clay-500 focus:border-transparent"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-corsican-clay-700 mb-2">
+                  Email *
+                </label>
+                <input
+                  type="email"
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  required
+                  className="w-full px-4 py-2 border border-corsican-clay-300 rounded-lg focus:ring-2 focus:ring-corsican-clay-500 focus:border-transparent"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-corsican-clay-700 mb-2">
+                  Téléphone
+                </label>
+                <input
+                  type="tel"
+                  value={formData.phone}
+                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                  className="w-full px-4 py-2 border border-corsican-clay-300 rounded-lg focus:ring-2 focus:ring-corsican-clay-500 focus:border-transparent"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-corsican-clay-700 mb-2">
+                  Adresse
+                </label>
+                <input
+                  type="text"
+                  value={formData.address}
+                  onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                  className="w-full px-4 py-2 border border-corsican-clay-300 rounded-lg focus:ring-2 focus:ring-corsican-clay-500 focus:border-transparent"
+                />
+              </div>
+
+              <div className="grid md:grid-cols-3 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-corsican-clay-700 mb-2">
+                    Code postal
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.postalCode}
+                    onChange={(e) => setFormData({ ...formData, postalCode: e.target.value })}
+                    className="w-full px-4 py-2 border border-corsican-clay-300 rounded-lg focus:ring-2 focus:ring-corsican-clay-500 focus:border-transparent"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-corsican-clay-700 mb-2">
+                    Ville
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.city}
+                    onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+                    className="w-full px-4 py-2 border border-corsican-clay-300 rounded-lg focus:ring-2 focus:ring-corsican-clay-500 focus:border-transparent"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-corsican-clay-700 mb-2">
+                    Pays
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.country}
+                    onChange={(e) => setFormData({ ...formData, country: e.target.value })}
+                    className="w-full px-4 py-2 border border-corsican-clay-300 rounded-lg focus:ring-2 focus:ring-corsican-clay-500 focus:border-transparent"
+                  />
+                </div>
+              </div>
+
+              <div className="flex justify-end space-x-3 pt-4 border-t border-corsican-clay-200">
+                <button
+                  type="button"
+                  onClick={handleCloseModal}
+                  className="px-6 py-2 border border-corsican-clay-300 text-corsican-clay-700 font-medium rounded-lg hover:bg-corsican-clay-50 transition-colors"
+                >
+                  Annuler
+                </button>
+                <button
+                  type="submit"
+                  disabled={saving}
+                  className="px-6 py-2 bg-corsican-clay-600 text-white font-medium rounded-lg hover:bg-corsican-clay-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {saving ? (
+                    <>
+                      <Loader2 className="h-5 w-5 mr-2 animate-spin inline" />
+                      Enregistrement...
+                    </>
+                  ) : (
+                    editingCustomer ? "Mettre à jour" : "Créer"
+                  )}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

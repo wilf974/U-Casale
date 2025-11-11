@@ -97,6 +97,18 @@ export default async function DashboardLayout({
               👥 Clients
             </Link>
             <Link
+              href="/dashboard/faq"
+              className="block px-4 py-2 text-stone-700 hover:bg-stone-100 rounded-lg transition"
+            >
+              ❓ FAQ
+            </Link>
+            <Link
+              href="/dashboard/temoignages"
+              className="block px-4 py-2 text-stone-700 hover:bg-stone-100 rounded-lg transition"
+            >
+              ⭐ Témoignages
+            </Link>
+            <Link
               href="/dashboard/parametres"
               className="block px-4 py-2 text-stone-700 hover:bg-stone-100 rounded-lg transition"
             >
