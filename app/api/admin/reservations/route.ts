@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/db"
+import { ReservationStatus } from "@prisma/client"
 
 export async function GET(req: Request) {
   try {
@@ -11,11 +12,14 @@ export async function GET(req: Request) {
     }
 
     const { searchParams } = new URL(req.url)
-    const status = searchParams.get("status")
+    const statusParam = searchParams.get("status")
     const limit = parseInt(searchParams.get("limit") || "50")
     const offset = parseInt(searchParams.get("offset") || "0")
 
-    const where = status ? { status } : {}
+    const where: any = {}
+    if (statusParam && Object.values(ReservationStatus).includes(statusParam as ReservationStatus)) {
+      where.status = statusParam as ReservationStatus
+    }
 
     const [reservations, total] = await Promise.all([
       prisma.reservation.findMany({

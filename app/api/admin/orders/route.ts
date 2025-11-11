@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/db"
 import { auth } from "@/lib/auth"
+import { OrderStatus } from "@prisma/client"
 
 export async function GET(req: Request) {
   try {
@@ -14,12 +15,12 @@ export async function GET(req: Request) {
     }
 
     const { searchParams } = new URL(req.url)
-    const status = searchParams.get("status")
+    const statusParam = searchParams.get("status")
 
     const where: any = {}
 
-    if (status && status !== "all") {
-      where.status = status
+    if (statusParam && statusParam !== "all" && Object.values(OrderStatus).includes(statusParam as OrderStatus)) {
+      where.status = statusParam as OrderStatus
     }
 
     const orders = await prisma.order.findMany({
