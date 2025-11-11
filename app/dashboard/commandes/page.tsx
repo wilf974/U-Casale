@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Package, Euro, Clock, CheckCircle, Truck, XCircle, Eye, Loader2, Mail, Phone } from "lucide-react"
+import { Package, Euro, Clock, CheckCircle, Truck, XCircle, Eye, Loader2, Mail, Phone, Download } from "lucide-react"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import Link from "next/link"
@@ -171,12 +171,28 @@ export default function CommandesPage() {
   return (
     <div className="p-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-serif font-bold text-corsican-clay-900 mb-2">
-          Commandes
-        </h1>
-        <p className="text-corsican-clay-700">
-          Gérez toutes les commandes de la boutique
-        </p>
+        <div className="flex items-start justify-between">
+          <div>
+            <h1 className="text-3xl font-serif font-bold text-corsican-clay-900 mb-2">
+              Commandes
+            </h1>
+            <p className="text-corsican-clay-700">
+              Gérez toutes les commandes de la boutique
+            </p>
+          </div>
+          <button
+            onClick={() => {
+              const url = statusFilter === "all"
+                ? "/api/admin/export/orders"
+                : `/api/admin/export/orders?status=${statusFilter}`
+              window.location.href = url
+            }}
+            className="inline-flex items-center px-4 py-2 rounded-lg bg-corsican-maquis-600 text-white font-semibold hover:bg-corsican-maquis-700 transition-all"
+          >
+            <Download className="h-5 w-5 mr-2" />
+            Exporter CSV
+          </button>
+        </div>
       </div>
 
       {/* Stats */}

@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Users, Mail, Phone, MapPin, ShoppingBag, Calendar, Search, Loader2, Eye, Trash2 } from "lucide-react"
+import { Users, Mail, Phone, MapPin, ShoppingBag, Calendar, Search, Loader2, Eye, Trash2, Download } from "lucide-react"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import Link from "next/link"
@@ -102,6 +102,15 @@ export default function ClientsPage() {
               Gérez tous les clients du site
             </p>
           </div>
+          <button
+            onClick={() => {
+              window.location.href = "/api/admin/export/customers"
+            }}
+            className="inline-flex items-center px-4 py-2 rounded-lg bg-corsican-maquis-600 text-white font-semibold hover:bg-corsican-maquis-700 transition-all"
+          >
+            <Download className="h-5 w-5 mr-2" />
+            Exporter CSV
+          </button>
         </div>
 
         {/* Stats */}

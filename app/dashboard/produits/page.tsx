@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Plus, Edit, Trash2, Search, Loader2, Package, Eye, EyeOff, Image as ImageIcon, X } from "lucide-react"
+import { Plus, Edit, Trash2, Search, Loader2, Package, Eye, EyeOff, Image as ImageIcon, X, Download } from "lucide-react"
 import Link from "next/link"
 
 interface Category {
@@ -246,13 +246,24 @@ export default function ProductsPage() {
               Gérez les produits de la boutique
             </p>
           </div>
-          <button
-            onClick={() => handleOpenModal()}
-            className="inline-flex items-center px-4 py-2 rounded-lg bg-corsican-clay-600 text-white font-semibold hover:bg-corsican-clay-700 transition-all"
-          >
-            <Plus className="h-5 w-5 mr-2" />
-            Nouveau produit
-          </button>
+          <div className="flex items-center space-x-3">
+            <button
+              onClick={() => {
+                window.location.href = "/api/admin/export/products"
+              }}
+              className="inline-flex items-center px-4 py-2 rounded-lg bg-corsican-maquis-600 text-white font-semibold hover:bg-corsican-maquis-700 transition-all"
+            >
+              <Download className="h-5 w-5 mr-2" />
+              Exporter CSV
+            </button>
+            <button
+              onClick={() => handleOpenModal()}
+              className="inline-flex items-center px-4 py-2 rounded-lg bg-corsican-clay-600 text-white font-semibold hover:bg-corsican-clay-700 transition-all"
+            >
+              <Plus className="h-5 w-5 mr-2" />
+              Nouveau produit
+            </button>
+          </div>
         </div>
 
         {/* Stats */}

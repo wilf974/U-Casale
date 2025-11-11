@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Calendar, Users, Euro, Mail, Phone, CheckCircle, Clock, XCircle, Trash2, Eye } from "lucide-react"
+import { Calendar, Users, Euro, Mail, Phone, CheckCircle, Clock, XCircle, Trash2, Eye, Download } from "lucide-react"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import Link from "next/link"
@@ -129,13 +129,27 @@ export default function ReservationsPage() {
               Gérez toutes les réservations du gîte
             </p>
           </div>
-          <Link
-            href="/dashboard/reservations/calendrier"
-            className="inline-flex items-center px-4 py-2 rounded-lg bg-corsican-clay-600 text-white font-semibold hover:bg-corsican-clay-700 transition-all"
-          >
-            <Calendar className="h-5 w-5 mr-2" />
-            Vue calendrier
-          </Link>
+          <div className="flex items-center space-x-3">
+            <button
+              onClick={() => {
+                const url = filter === "all"
+                  ? "/api/admin/export/reservations"
+                  : `/api/admin/export/reservations?status=${filter}`
+                window.location.href = url
+              }}
+              className="inline-flex items-center px-4 py-2 rounded-lg bg-corsican-maquis-600 text-white font-semibold hover:bg-corsican-maquis-700 transition-all"
+            >
+              <Download className="h-5 w-5 mr-2" />
+              Exporter CSV
+            </button>
+            <Link
+              href="/dashboard/reservations/calendrier"
+              className="inline-flex items-center px-4 py-2 rounded-lg bg-corsican-clay-600 text-white font-semibold hover:bg-corsican-clay-700 transition-all"
+            >
+              <Calendar className="h-5 w-5 mr-2" />
+              Vue calendrier
+            </Link>
+          </div>
         </div>
       </div>
 
