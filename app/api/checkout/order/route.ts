@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { createOrderCheckoutSession } from "@/lib/stripe"
 import { prisma } from "@/lib/db"
+import { PaymentStatus } from "@prisma/client"
 
 export async function POST(req: Request) {
   try {
@@ -32,7 +33,7 @@ export async function POST(req: Request) {
     }
 
     // Vérifier que la commande n'est pas déjà payée
-    if (order.status === "paid") {
+    if (order.paymentStatus === PaymentStatus.PAID) {
       return NextResponse.json(
         { error: "Order already paid" },
         { status: 400 }

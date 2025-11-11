@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { createReservationCheckoutSession } from "@/lib/stripe"
 import { prisma } from "@/lib/db"
+import { PaymentStatus } from "@prisma/client"
 
 export async function POST(req: Request) {
   try {
@@ -30,7 +31,7 @@ export async function POST(req: Request) {
     }
 
     // Vérifier que la réservation n'est pas déjà payée
-    if (reservation.paymentStatus === "paid") {
+    if (reservation.paymentStatus === PaymentStatus.PAID) {
       return NextResponse.json(
         { error: "Reservation already paid" },
         { status: 400 }

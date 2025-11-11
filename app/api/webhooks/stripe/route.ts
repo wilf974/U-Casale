@@ -2,6 +2,7 @@ import { headers } from "next/headers"
 import { NextResponse } from "next/server"
 import { stripe } from "@/lib/stripe"
 import { prisma } from "@/lib/db"
+import { PaymentStatus, ReservationStatus, OrderStatus } from "@prisma/client"
 import Stripe from "stripe"
 
 export async function POST(req: Request) {
@@ -41,8 +42,8 @@ export async function POST(req: Request) {
         await prisma.reservation.update({
           where: { id: reservationId },
           data: {
-            paymentStatus: "paid",
-            status: "confirmed",
+            paymentStatus: PaymentStatus.PAID,
+            status: ReservationStatus.CONFIRMED,
             stripePaymentId: session.payment_intent as string,
           },
         })
@@ -53,7 +54,8 @@ export async function POST(req: Request) {
         await prisma.order.update({
           where: { id: orderId },
           data: {
-            status: "paid",
+            paymentStatus: PaymentStatus.PAID,
+            status: OrderStatus.PROCESSING,
             stripePaymentId: session.payment_intent as string,
           },
         })
@@ -86,8 +88,8 @@ export async function POST(req: Request) {
         await prisma.reservation.update({
           where: { id: reservation.id },
           data: {
-            paymentStatus: "refunded",
-            status: "cancelled",
+            paymentStatus: PaymentStatus.REFUNDED,
+            status: ReservationStatus.CANCELLED,
           },
         })
       }
@@ -100,7 +102,8 @@ export async function POST(req: Request) {
         await prisma.order.update({
           where: { id: order.id },
           data: {
-            status: "refunded",
+            paymentStatus: PaymentStatus.REFUNDED,
+            status: OrderStatus.CANCELLED,
           },
         })
       }
