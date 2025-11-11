@@ -1,11 +1,29 @@
 "use client"
 
 import Link from "next/link"
-import { useState } from "react"
-import { Menu, X } from "lucide-react"
+import { useState, useEffect } from "react"
+import { Menu, X, ShoppingCart } from "lucide-react"
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [cartCount, setCartCount] = useState(0)
+
+  useEffect(() => {
+    updateCartCount()
+
+    const handleCartUpdate = () => {
+      updateCartCount()
+    }
+
+    window.addEventListener("cartUpdated", handleCartUpdate)
+    return () => window.removeEventListener("cartUpdated", handleCartUpdate)
+  }, [])
+
+  const updateCartCount = () => {
+    const cart = JSON.parse(localStorage.getItem("cart") || "[]")
+    const count = cart.reduce((total: number, item: any) => total + item.quantity, 0)
+    setCartCount(count)
+  }
 
   const navigation = [
     { name: "Accueil", href: "/" },
@@ -43,6 +61,17 @@ export default function Header() {
               </Link>
             ))}
             <Link
+              href="/boutique/panier"
+              className="relative p-2 text-corsican-clay-700 hover:text-corsican-clay-900 transition-colors"
+            >
+              <ShoppingCart className="h-6 w-6" />
+              {cartCount > 0 && (
+                <span className="absolute -top-1 -right-1 flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-corsican-maquis-600 rounded-full">
+                  {cartCount}
+                </span>
+              )}
+            </Link>
+            <Link
               href="/gite/reserver"
               className="inline-flex items-center rounded-md bg-corsican-clay-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-corsican-clay-700 transition-all duration-200 hover:shadow-md"
             >
@@ -51,7 +80,18 @@ export default function Header() {
           </div>
 
           {/* Mobile menu button */}
-          <div className="flex md:hidden">
+          <div className="flex items-center gap-2 md:hidden">
+            <Link
+              href="/boutique/panier"
+              className="relative p-2 text-corsican-clay-700 hover:text-corsican-clay-900 transition-colors"
+            >
+              <ShoppingCart className="h-6 w-6" />
+              {cartCount > 0 && (
+                <span className="absolute -top-1 -right-1 flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-corsican-maquis-600 rounded-full">
+                  {cartCount}
+                </span>
+              )}
+            </Link>
             <button
               type="button"
               className="inline-flex items-center justify-center rounded-md p-2 text-corsican-clay-700 hover:bg-corsican-clay-100 hover:text-corsican-clay-900 transition-colors"

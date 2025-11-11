@@ -1,33 +1,80 @@
+"use client"
+
+import { useState, useEffect } from "react"
 import PublicLayout from "@/components/layout/PublicLayout"
-import { ShoppingBag, Wine, Droplet, Leaf, Package } from "lucide-react"
+import { ShoppingBag, Search, Filter, Loader2 } from "lucide-react"
+import Link from "next/link"
+
+interface Product {
+  id: string
+  slug: string
+  name: string
+  description: string
+  price: number
+  stock: number
+  images: string[]
+  category: {
+    id: string
+    name: string
+    slug: string
+  }
+}
+
+interface Category {
+  id: string
+  name: string
+  slug: string
+  _count: {
+    products: number
+  }
+}
 
 export default function BoutiquePage() {
-  const categories = [
-    {
-      icon: Wine,
-      name: "Vins Corses",
-      description: "Sélection de vins locaux",
-      count: "Bientôt disponible",
-    },
-    {
-      icon: Droplet,
-      name: "Huiles & Vinaigres",
-      description: "Huile d'olive AOP",
-      count: "Bientôt disponible",
-    },
-    {
-      icon: Leaf,
-      name: "Confitures & Miel",
-      description: "Produits du terroir",
-      count: "Bientôt disponible",
-    },
-    {
-      icon: Package,
-      name: "Coffrets Cadeaux",
-      description: "Compositions gourmandes",
-      count: "Bientôt disponible",
-    },
-  ]
+  const [products, setProducts] = useState<Product[]>([])
+  const [categories, setCategories] = useState<Category[]>([])
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
+  const [searchQuery, setSearchQuery] = useState("")
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    fetchCategories()
+    fetchProducts()
+  }, [])
+
+  useEffect(() => {
+    fetchProducts()
+  }, [selectedCategory, searchQuery])
+
+  const fetchCategories = async () => {
+    try {
+      const response = await fetch("/api/categories")
+      const data = await response.json()
+      if (response.ok) {
+        setCategories(data.categories)
+      }
+    } catch (error) {
+      console.error("Error fetching categories:", error)
+    }
+  }
+
+  const fetchProducts = async () => {
+    setLoading(true)
+    try {
+      const params = new URLSearchParams()
+      if (selectedCategory) params.append("categoryId", selectedCategory)
+      if (searchQuery) params.append("search", searchQuery)
+
+      const response = await fetch(`/api/products?${params.toString()}`)
+      const data = await response.json()
+      if (response.ok) {
+        setProducts(data.products)
+      }
+    } catch (error) {
+      console.error("Error fetching products:", error)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   return (
     <PublicLayout>
@@ -47,126 +94,170 @@ export default function BoutiquePage() {
         </div>
       </section>
 
-      {/* Présentation */}
-      <section className="py-20 bg-white">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-serif font-bold text-corsican-clay-900 mb-6">
-              Notre Production Artisanale
-            </h2>
-            <p className="text-lg text-corsican-clay-700 leading-relaxed">
-              Seni Production vous propose une sélection de produits corses authentiques,
-              issus de notre terroir et transformés de manière artisanale. Vins, huiles,
-              confitures... découvrez les saveurs de la Corse.
-            </p>
-          </div>
-
-          <div className="bg-corsican-sand-50 rounded-2xl p-8 border-2 border-corsican-sand-200">
-            <h3 className="text-xl font-semibold text-corsican-clay-900 mb-4 text-center">
-              Notre Engagement Qualité
-            </h3>
-            <div className="grid md:grid-cols-3 gap-6">
-              <div className="text-center">
-                <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-corsican-maquis-100 mb-3">
-                  <Leaf className="h-6 w-6 text-corsican-maquis-600" />
-                </div>
-                <p className="font-medium text-corsican-clay-900 mb-1">100% Local</p>
-                <p className="text-sm text-corsican-clay-600">Production corse</p>
-              </div>
-              <div className="text-center">
-                <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-corsican-clay-100 mb-3">
-                  <Package className="h-6 w-6 text-corsican-clay-600" />
-                </div>
-                <p className="font-medium text-corsican-clay-900 mb-1">Artisanal</p>
-                <p className="text-sm text-corsican-clay-600">Fait main</p>
-              </div>
-              <div className="text-center">
-                <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-corsican-sea-100 mb-3">
-                  <Wine className="h-6 w-6 text-corsican-sea-600" />
-                </div>
-                <p className="font-medium text-corsican-clay-900 mb-1">Qualité</p>
-                <p className="text-sm text-corsican-clay-600">Sélection rigoureuse</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Catégories */}
-      <section className="py-20 bg-corsican-maquis-50">
+      {/* Filters & Search */}
+      <section className="py-8 bg-white border-b border-stone-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-serif font-bold text-corsican-clay-900 mb-12 text-center">
-            Nos Catégories de Produits
-          </h2>
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {categories.map((category, index) => (
-              <div
-                key={index}
-                className="bg-white rounded-xl p-6 text-center hover:shadow-xl transition-all cursor-pointer border-2 border-transparent hover:border-corsican-maquis-200"
-              >
-                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-corsican-maquis-100 mb-4">
-                  <category.icon className="h-8 w-8 text-corsican-maquis-600" />
-                </div>
-                <h3 className="text-xl font-semibold text-corsican-clay-900 mb-2">
-                  {category.name}
-                </h3>
-                <p className="text-corsican-clay-600 mb-3">{category.description}</p>
-                <p className="text-sm text-corsican-maquis-600 font-medium">{category.count}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+          <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
+            {/* Search */}
+            <div className="relative w-full md:w-96">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-stone-400" />
+              <input
+                type="text"
+                placeholder="Rechercher un produit..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-10 pr-4 py-3 rounded-lg border border-stone-300 focus:outline-none focus:ring-2 focus:ring-corsican-maquis-500"
+              />
+            </div>
 
-      {/* Coming Soon */}
-      <section className="py-20 bg-white">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="bg-gradient-to-br from-corsican-clay-100 to-corsican-sand-100 rounded-2xl p-12 border-2 border-corsican-clay-200">
-            <ShoppingBag className="h-16 w-16 text-corsican-clay-600 mx-auto mb-6" />
-            <h2 className="text-3xl font-serif font-bold text-corsican-clay-900 mb-4">
-              Boutique en ligne bientôt disponible
-            </h2>
-            <p className="text-lg text-corsican-clay-700 mb-8">
-              Nous préparons actuellement notre boutique en ligne pour vous permettre de
-              commander nos produits artisanaux corses directement depuis chez vous.
-            </p>
-            <div className="space-y-4 text-left max-w-md mx-auto">
-              <div className="flex items-start space-x-3">
-                <span className="inline-block w-2 h-2 rounded-full bg-corsican-maquis-600 mt-2 flex-shrink-0"></span>
-                <p className="text-corsican-clay-700">Catalogue complet de nos produits</p>
-              </div>
-              <div className="flex items-start space-x-3">
-                <span className="inline-block w-2 h-2 rounded-full bg-corsican-maquis-600 mt-2 flex-shrink-0"></span>
-                <p className="text-corsican-clay-700">Paiement sécurisé en ligne</p>
-              </div>
-              <div className="flex items-start space-x-3">
-                <span className="inline-block w-2 h-2 rounded-full bg-corsican-maquis-600 mt-2 flex-shrink-0"></span>
-                <p className="text-corsican-clay-700">Livraison dans toute la France</p>
-              </div>
-              <div className="flex items-start space-x-3">
-                <span className="inline-block w-2 h-2 rounded-full bg-corsican-maquis-600 mt-2 flex-shrink-0"></span>
-                <p className="text-corsican-clay-700">Option retrait sur place</p>
-              </div>
+            {/* Category Filter */}
+            <div className="flex gap-2 overflow-x-auto pb-2 w-full md:w-auto">
+              <button
+                onClick={() => setSelectedCategory(null)}
+                className={`px-4 py-2 rounded-lg font-medium whitespace-nowrap transition-colors ${
+                  selectedCategory === null
+                    ? "bg-corsican-maquis-600 text-white"
+                    : "bg-stone-100 text-stone-700 hover:bg-stone-200"
+                }`}
+              >
+                Tous ({categories.reduce((sum, cat) => sum + cat._count.products, 0)})
+              </button>
+              {categories.map((category) => (
+                <button
+                  key={category.id}
+                  onClick={() => setSelectedCategory(category.id)}
+                  className={`px-4 py-2 rounded-lg font-medium whitespace-nowrap transition-colors ${
+                    selectedCategory === category.id
+                      ? "bg-corsican-maquis-600 text-white"
+                      : "bg-stone-100 text-stone-700 hover:bg-stone-200"
+                  }`}
+                >
+                  {category.name} ({category._count.products})
+                </button>
+              ))}
             </div>
           </div>
         </div>
       </section>
 
-      {/* Contact */}
-      <section className="py-20 bg-gradient-to-r from-corsican-maquis-700 to-corsican-maquis-800">
+      {/* Products Grid */}
+      <section className="py-16 bg-stone-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {loading ? (
+            <div className="flex items-center justify-center py-20">
+              <Loader2 className="h-12 w-12 text-corsican-maquis-600 animate-spin" />
+            </div>
+          ) : products.length === 0 ? (
+            <div className="text-center py-20">
+              <ShoppingBag className="h-24 w-24 text-stone-300 mx-auto mb-6" />
+              <h3 className="text-2xl font-semibold text-stone-900 mb-2">
+                Aucun produit trouvé
+              </h3>
+              <p className="text-stone-600 mb-6">
+                {searchQuery || selectedCategory
+                  ? "Essayez de modifier vos filtres de recherche"
+                  : "Nous préparons actuellement notre catalogue de produits"}
+              </p>
+              {(searchQuery || selectedCategory) && (
+                <button
+                  onClick={() => {
+                    setSearchQuery("")
+                    setSelectedCategory(null)
+                  }}
+                  className="px-6 py-3 bg-corsican-maquis-600 text-white rounded-lg hover:bg-corsican-maquis-700 transition-colors"
+                >
+                  Réinitialiser les filtres
+                </button>
+              )}
+            </div>
+          ) : (
+            <>
+              <div className="mb-6">
+                <p className="text-stone-600">
+                  {products.length} produit{products.length > 1 ? "s" : ""} trouvé{products.length > 1 ? "s" : ""}
+                </p>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                {products.map((product) => (
+                  <Link
+                    key={product.id}
+                    href={`/boutique/${product.slug}`}
+                    className="group bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-stone-200"
+                  >
+                    {/* Product Image */}
+                    <div className="aspect-square bg-gradient-to-br from-corsican-sand-100 to-corsican-maquis-100 relative overflow-hidden">
+                      {product.images && product.images.length > 0 ? (
+                        <img
+                          src={product.images[0]}
+                          alt={product.name}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        />
+                      ) : (
+                        <div className="flex items-center justify-center h-full">
+                          <ShoppingBag className="h-16 w-16 text-corsican-sand-300" />
+                        </div>
+                      )}
+                      {product.stock === 0 && (
+                        <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
+                          <span className="bg-red-600 text-white px-4 py-2 rounded-lg font-semibold">
+                            Rupture de stock
+                          </span>
+                        </div>
+                      )}
+                      {product.stock > 0 && product.stock <= 5 && (
+                        <div className="absolute top-3 right-3">
+                          <span className="bg-orange-500 text-white px-3 py-1 rounded-full text-sm font-medium">
+                            Stock limité
+                          </span>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Product Info */}
+                    <div className="p-5">
+                      <div className="mb-2">
+                        <span className="text-xs font-medium text-corsican-maquis-600 uppercase tracking-wider">
+                          {product.category.name}
+                        </span>
+                      </div>
+                      <h3 className="text-lg font-semibold text-stone-900 mb-2 group-hover:text-corsican-maquis-700 transition-colors line-clamp-2">
+                        {product.name}
+                      </h3>
+                      <p className="text-sm text-stone-600 mb-4 line-clamp-2">
+                        {product.description}
+                      </p>
+                      <div className="flex items-center justify-between">
+                        <span className="text-2xl font-bold text-corsican-clay-900">
+                          {product.price.toFixed(2)} €
+                        </span>
+                        <span className="text-sm text-stone-500">
+                          {product.stock > 5 ? "En stock" : `Stock: ${product.stock}`}
+                        </span>
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </>
+          )}
+        </div>
+      </section>
+
+      {/* CTA */}
+      <section className="py-16 bg-gradient-to-r from-corsican-maquis-700 to-corsican-maquis-800">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl md:text-4xl font-serif font-bold text-white mb-6">
-            Envie de découvrir nos produits ?
+            Une question sur nos produits ?
           </h2>
           <p className="text-xl text-corsican-maquis-100 mb-8">
             Contactez-nous pour plus d'informations sur nos produits artisanaux
           </p>
-          <a
+          <Link
             href="/contact"
             className="inline-flex items-center justify-center px-8 py-4 rounded-lg bg-white text-corsican-maquis-700 font-semibold hover:bg-corsican-clay-50 transition-all shadow-lg"
           >
             Nous contacter
-          </a>
+          </Link>
         </div>
       </section>
     </PublicLayout>
