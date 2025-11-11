@@ -16,13 +16,17 @@ Plateforme complète combinant :
 - **Styling** : Tailwind CSS + Shadcn UI
 - **Base de données** : PostgreSQL + Prisma
 - **Paiement** : Stripe
-- **Hosting** : Vercel
+- **Déploiement** : Docker + Docker Compose + Nginx + Let's Encrypt
+- **Production** : VPS avec HTTPS (ucasale.woutils.com)
 
 ## 📦 Installation
+
+### Développement Local
 
 ```bash
 # Cloner le repository
 git clone [url-du-repo]
+cd u-casale
 
 # Installer les dépendances
 npm install
@@ -37,6 +41,49 @@ npm run dev
 ```
 
 Ouvrir [http://localhost:3000](http://localhost:3000) dans votre navigateur.
+
+### Développement avec Docker (Base de données uniquement)
+
+```bash
+# Démarrer PostgreSQL + Adminer
+docker compose -f docker-compose.dev.yml up -d
+
+# Accéder à Adminer (interface DB)
+# http://localhost:8080
+# Server: postgres | User: ucasale | Password: devpassword | Database: ucasale_dev
+
+# Dans un autre terminal
+npm run dev
+```
+
+### 🚀 Déploiement en Production
+
+Pour déployer sur votre VPS avec Docker, HTTPS et Let's Encrypt :
+
+**[📖 Voir le Guide de Déploiement Complet](./DEPLOYMENT.md)**
+
+Commandes rapides :
+
+```bash
+# Sur votre VPS
+git clone [url-du-repo]
+cd u-casale
+
+# Configuration
+cp .env.production.example .env
+nano .env  # Configurer les variables
+
+# Initialiser SSL (première fois uniquement)
+./init-letsencrypt.sh
+
+# Démarrer l'application
+./deploy.sh start
+
+# Ou avec Make
+make start
+```
+
+**Site Production** : https://ucasale.woutils.com (ports 4080 HTTP / 4443 HTTPS)
 
 ## 📁 Structure du Projet
 
@@ -77,7 +124,45 @@ u-casale/
 
 ## 📝 Documentation
 
-Consultez le fichier [TODO.md](./TODO.md) pour le plan détaillé de développement.
+- **[TODO.md](./TODO.md)** - Plan détaillé de développement (17 phases)
+- **[DEPLOYMENT.md](./DEPLOYMENT.md)** - Guide complet de déploiement Docker
+
+## 🔧 Commandes Utiles
+
+### Scripts de Déploiement
+
+```bash
+./deploy.sh start       # Démarrer les conteneurs
+./deploy.sh stop        # Arrêter les conteneurs
+./deploy.sh restart     # Redémarrer
+./deploy.sh logs        # Voir les logs
+./deploy.sh status      # Statut des conteneurs
+./deploy.sh update      # Mise à jour (git pull + rebuild)
+./deploy.sh backup      # Sauvegarder la base de données
+./deploy.sh ssl-renew   # Renouveler le certificat SSL
+```
+
+### Makefile (Raccourcis)
+
+```bash
+make start          # Démarrer
+make stop           # Arrêter
+make logs           # Logs
+make status         # Statut
+make backup         # Backup
+make help           # Voir toutes les commandes
+```
+
+### Docker Compose
+
+```bash
+docker compose up -d                # Démarrer en arrière-plan
+docker compose down                 # Arrêter et supprimer
+docker compose logs -f              # Logs en temps réel
+docker compose ps                   # Statut des conteneurs
+docker compose exec app sh          # Shell dans l'app
+docker compose exec postgres psql -U ucasale ucasale_db  # PostgreSQL CLI
+```
 
 ## 🔐 Sécurité
 

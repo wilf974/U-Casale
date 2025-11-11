@@ -46,3 +46,14 @@ next-env.d.ts
 *.swp
 *.swo
 *~
+
+# Docker
+certbot/conf/*
+certbot/www/*
+!certbot/.gitkeep
+backups/
+*.sql
+*.sql.gz
+
+# Production env
+.env.production
