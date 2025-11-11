@@ -257,3 +257,35 @@ model SiteSettings {
 
   @@map("site_settings")
 }
+
+// ============================================
+// FAQ & TÉMOIGNAGES
+// ============================================
+
+model FAQ {
+  id          String   @id @default(cuid())
+  question    String
+  answer      String
+  category    String?  // "gite", "boutique", "general", "reservation", etc.
+  displayOrder Int     @default(0)
+  published   Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("faqs")
+}
+
+model Testimonial {
+  id          String   @id @default(cuid())
+  customerName String
+  content     String
+  rating      Int      @default(5) // 1-5 stars
+  type        String   @default("gite") // "gite" or "boutique"
+  verified    Boolean  @default(false)
+  published   Boolean  @default(true)
+  displayOrder Int     @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("testimonials")
+}
