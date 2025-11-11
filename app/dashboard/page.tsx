@@ -53,7 +53,7 @@ interface Stats {
     orders: Array<{
       id: string
       orderNumber: string
-      totalPrice: number
+      total: number
       status: string
       customer: {
         firstName: string
@@ -285,7 +285,7 @@ export default function DashboardPage() {
                     <p className="text-xs text-corsican-clay-600 font-mono">{order.orderNumber}</p>
                   </div>
                   <div className="text-right">
-                    <p className="text-sm font-semibold text-corsican-clay-900">{order.totalPrice.toFixed(0)}€</p>
+                    <p className="text-sm font-semibold text-corsican-clay-900">{order.total.toFixed(0)}€</p>
                     <p className="text-xs text-corsican-clay-600">
                       {format(new Date(order.createdAt), "dd/MM", { locale: fr })}
                     </p>

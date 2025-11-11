@@ -47,7 +47,7 @@ export async function GET() {
       prisma.order.count({ where: { status: OrderStatus.SHIPPED } }),
       prisma.order.aggregate({
         where: { paymentStatus: PaymentStatus.PAID },
-        _sum: { totalPrice: true },
+        _sum: { total: true },
       }),
 
       // Products stats
@@ -91,7 +91,7 @@ export async function GET() {
       }),
     ])
 
-    const totalRevenue = (reservationsRevenue._sum.totalPrice || 0) + (ordersRevenue._sum.totalPrice || 0)
+    const totalRevenue = (reservationsRevenue._sum.totalPrice || 0) + (ordersRevenue._sum.total || 0)
 
     return NextResponse.json({
       reservations: {
@@ -104,7 +104,7 @@ export async function GET() {
         total: totalOrders,
         processing: processingOrders,
         shipped: shippedOrders,
-        revenue: ordersRevenue._sum.totalPrice || 0,
+        revenue: ordersRevenue._sum.total || 0,
       },
       products: {
         total: totalProducts,
@@ -122,7 +122,7 @@ export async function GET() {
       revenue: {
         total: totalRevenue,
         reservations: reservationsRevenue._sum.totalPrice || 0,
-        orders: ordersRevenue._sum.totalPrice || 0,
+        orders: ordersRevenue._sum.total || 0,
       },
       recentActivity: {
         reservations: recentReservations,

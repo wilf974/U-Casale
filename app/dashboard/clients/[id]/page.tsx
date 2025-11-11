@@ -29,7 +29,7 @@ interface OrderItem {
 interface Order {
   id: string
   orderNumber: string
-  totalPrice: number
+  total: number
   status: string
   createdAt: string
   items: OrderItem[]
@@ -115,7 +115,7 @@ export default function CustomerDetailPage({ params }: { params: { id: string } 
 
   const totalSpent =
     customer.reservations.reduce((sum, r) => sum + r.totalPrice, 0) +
-    customer.orders.reduce((sum, o) => sum + o.totalPrice, 0)
+    customer.orders.reduce((sum, o) => sum + o.total, 0)
 
   return (
     <div className="p-8">
@@ -269,7 +269,7 @@ export default function CustomerDetailPage({ params }: { params: { id: string } 
                     </p>
                   </div>
                   <div className="text-right">
-                    <p className="text-xl font-bold text-corsican-clay-900">{order.totalPrice.toFixed(2)}€</p>
+                    <p className="text-xl font-bold text-corsican-clay-900">{order.total.toFixed(2)}€</p>
                     {getStatusBadge(order.status)}
                   </div>
                 </div>

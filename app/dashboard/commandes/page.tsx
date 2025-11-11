@@ -31,7 +31,7 @@ interface OrderItem {
 interface Order {
   id: string
   orderNumber: string
-  totalPrice: number
+  total: number
   status: string
   paymentStatus: string
   trackingNumber: string | null
@@ -165,7 +165,7 @@ export default function CommandesPage() {
     shipped: orders.filter(o => o.status === "SHIPPED").length,
     revenue: orders
       .filter(o => o.paymentStatus === "PAID")
-      .reduce((sum, o) => sum + o.totalPrice, 0),
+      .reduce((sum, o) => sum + o.total, 0),
   }
 
   return (
@@ -341,7 +341,7 @@ export default function CommandesPage() {
                       {order.items.reduce((sum, item) => sum + item.quantity, 0)} article(s)
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-corsican-clay-900">
-                      {order.totalPrice.toFixed(2)}€
+                      {order.total.toFixed(2)}€
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       {getStatusBadge(order.status)}
@@ -450,7 +450,7 @@ export default function CommandesPage() {
                 <div className="flex justify-between items-center">
                   <span className="text-lg font-semibold text-corsican-clay-900">Total</span>
                   <span className="text-2xl font-bold text-corsican-clay-900">
-                    {selectedOrder.totalPrice.toFixed(2)}€
+                    {selectedOrder.total.toFixed(2)}€
                   </span>
                 </div>
               </div>
