@@ -61,6 +61,12 @@ export default async function DashboardLayout({
               📅 Réservations
             </Link>
             <Link
+              href="/dashboard/gite"
+              className="block px-4 py-2 text-stone-700 hover:bg-stone-100 rounded-lg transition"
+            >
+              🏡 Configuration Gîte
+            </Link>
+            <Link
               href="/dashboard/produits"
               className="block px-4 py-2 text-stone-700 hover:bg-stone-100 rounded-lg transition"
             >
