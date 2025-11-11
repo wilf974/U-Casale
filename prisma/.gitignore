@@ -1,0 +1,5 @@
+# Prisma migrations (keep in git)
+# migrations/
+
+# But ignore migration lock file
+migrations/migration_lock.toml

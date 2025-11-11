@@ -1,0 +1,260 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================
+// UTILISATEURS & AUTHENTIFICATION
+// ============================================
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String
+  password  String   // Hashed avec bcrypt
+  role      UserRole @default(EDITOR)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("users")
+}
+
+enum UserRole {
+  ADMIN
+  MANAGER
+  EDITOR
+}
+
+// ============================================
+// CLIENTS
+// ============================================
+
+model Customer {
+  id           String        @id @default(cuid())
+  email        String        @unique
+  firstName    String
+  lastName     String
+  phone        String?
+  address      String?
+  city         String?
+  postalCode   String?
+  country      String?
+  reservations Reservation[]
+  orders       Order[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  @@map("customers")
+}
+
+// ============================================
+// RÉSERVATIONS GÎTE
+// ============================================
+
+model Reservation {
+  id              String            @id @default(cuid())
+  checkIn         DateTime
+  checkOut        DateTime
+  guests          Int
+  nights          Int
+  pricePerNight   Float
+  totalPrice      Float
+  status          ReservationStatus @default(PENDING)
+  paymentStatus   PaymentStatus     @default(PENDING)
+  stripePaymentId String?
+  notes           String?
+  customer        Customer          @relation(fields: [customerId], references: [id])
+  customerId      String
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  @@map("reservations")
+}
+
+enum ReservationStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  REFUNDED
+  FAILED
+}
+
+// ============================================
+// CONFIGURATION DU GÎTE
+// ============================================
+
+model GiteConfig {
+  id              String   @id @default(cuid())
+  pricePerNight   Float
+  maxGuests       Int
+  minimumStay     Int      @default(1)
+  blockedDates    Json     // Array of blocked date ranges
+  seasonalPricing Json?    // Seasonal price adjustments
+  cleaningFee     Float    @default(0)
+  taxRate         Float    @default(0)
+  description     String?
+  rules           String?
+  updatedAt       DateTime @updatedAt
+
+  @@map("gite_config")
+}
+
+// ============================================
+// PRODUITS E-COMMERCE
+// ============================================
+
+model Product {
+  id          String       @id @default(cuid())
+  slug        String       @unique
+  name        String
+  description String
+  price       Float
+  compareAtPrice Float?
+  cost        Float?
+  stock       Int          @default(0)
+  images      String[]     // Array of image URLs
+  published   Boolean      @default(false)
+  featured    Boolean      @default(false)
+  category    Category     @relation(fields: [categoryId], references: [id])
+  categoryId  String
+  orderItems  OrderItem[]
+  metaTitle   String?
+  metaDescription String?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  @@map("products")
+}
+
+// ============================================
+// CATÉGORIES
+// ============================================
+
+model Category {
+  id          String    @id @default(cuid())
+  slug        String    @unique
+  name        String
+  description String?
+  image       String?
+  parentId    String?
+  parent      Category? @relation("CategoryToCategory", fields: [parentId], references: [id])
+  children    Category[] @relation("CategoryToCategory")
+  products    Product[]
+  published   Boolean   @default(true)
+  displayOrder Int      @default(0)
+  metaTitle   String?
+  metaDescription String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@map("categories")
+}
+
+// ============================================
+// COMMANDES E-COMMERCE
+// ============================================
+
+model Order {
+  id              String      @id @default(cuid())
+  orderNumber     String      @unique
+  customer        Customer    @relation(fields: [customerId], references: [id])
+  customerId      String
+  items           OrderItem[]
+  subtotal        Float
+  shippingCost    Float       @default(0)
+  taxAmount       Float       @default(0)
+  discountAmount  Float       @default(0)
+  total           Float
+  status          OrderStatus @default(PENDING)
+  paymentStatus   PaymentStatus @default(PENDING)
+  shippingAddress Json
+  billingAddress  Json?
+  stripePaymentId String?
+  trackingNumber  String?
+  notes           String?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  @@map("orders")
+}
+
+enum OrderStatus {
+  PENDING
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+model OrderItem {
+  id          String  @id @default(cuid())
+  order       Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId     String
+  product     Product @relation(fields: [productId], references: [id])
+  productId   String
+  productName String  // Snapshot du nom au moment de l'achat
+  quantity    Int
+  price       Float   // Prix unitaire au moment de l'achat
+  total       Float   // quantity * price
+
+  @@map("order_items")
+}
+
+// ============================================
+// CODES PROMO
+// ============================================
+
+model PromoCode {
+  id          String    @id @default(cuid())
+  code        String    @unique
+  description String?
+  discountType DiscountType
+  discountValue Float
+  minPurchase Float?
+  maxUses     Int?
+  usedCount   Int       @default(0)
+  validFrom   DateTime
+  validUntil  DateTime
+  active      Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@map("promo_codes")
+}
+
+enum DiscountType {
+  PERCENTAGE
+  FIXED_AMOUNT
+}
+
+// ============================================
+// PARAMÈTRES SITE
+// ============================================
+
+model SiteSettings {
+  id                String   @id @default(cuid())
+  siteName          String   @default("U Casale")
+  siteDescription   String?
+  contactEmail      String?
+  contactPhone      String?
+  address           String?
+  facebookUrl       String?
+  instagramUrl      String?
+  maintenanceMode   Boolean  @default(false)
+  updatedAt         DateTime @updatedAt
+
+  @@map("site_settings")
+}
