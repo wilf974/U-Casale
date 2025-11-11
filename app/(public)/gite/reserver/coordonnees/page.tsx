@@ -6,7 +6,6 @@ import { User, Mail, Phone, MapPin, Loader2, CreditCard } from "lucide-react"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import { useRouter } from "next/navigation"
-import { getStripe } from "@/lib/stripe-client"
 
 interface ReservationData {
   checkIn: string
@@ -115,17 +114,10 @@ export default function CoordonneesPage() {
       }
 
       // Rediriger vers Stripe Checkout
-      const stripe = await getStripe()
-      if (!stripe) {
-        throw new Error("Stripe not initialized")
-      }
-
-      const { error: stripeError } = await stripe.redirectToCheckout({
-        sessionId: checkoutData.sessionId,
-      })
-
-      if (stripeError) {
-        throw new Error(stripeError.message)
+      if (checkoutData.url) {
+        window.location.href = checkoutData.url
+      } else {
+        throw new Error("No checkout URL received from Stripe")
       }
     } catch (err: any) {
       console.error("Error:", err)
