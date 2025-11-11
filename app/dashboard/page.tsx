@@ -1,10 +1,11 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Calendar, Package, ShoppingBag, Users, Euro, TrendingUp, AlertTriangle, Ticket, Loader2 } from "lucide-react"
+import { Calendar, Package, ShoppingBag, Users, Euro, TrendingUp, AlertTriangle, Ticket, Loader2, BarChart3, PieChart as PieChartIcon } from "lucide-react"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import Link from "next/link"
+import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts"
 
 interface Stats {
   reservations: {
@@ -64,12 +65,30 @@ interface Stats {
   }
 }
 
+interface ChartData {
+  monthlyData: Array<{
+    month: string
+    shortMonth: string
+    reservations: number
+    orders: number
+    reservationsRevenue: number
+    ordersRevenue: number
+    totalRevenue: number
+  }>
+  categoryData: Array<{
+    name: string
+    value: number
+  }>
+}
+
 export default function DashboardPage() {
   const [stats, setStats] = useState<Stats | null>(null)
+  const [chartData, setChartData] = useState<ChartData | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     fetchStats()
+    fetchChartData()
   }, [])
 
   const fetchStats = async () => {
@@ -85,6 +104,19 @@ export default function DashboardPage() {
       console.error("Error fetching stats:", error)
     } finally {
       setLoading(false)
+    }
+  }
+
+  const fetchChartData = async () => {
+    try {
+      const response = await fetch("/api/admin/charts")
+      const data = await response.json()
+
+      if (response.ok) {
+        setChartData(data)
+      }
+    } catch (error) {
+      console.error("Error fetching chart data:", error)
     }
   }
 
@@ -233,6 +265,178 @@ export default function DashboardPage() {
           </div>
         </Link>
       </div>
+
+      {/* Charts Section */}
+      {chartData && (
+        <div className="mb-8 space-y-6">
+          {/* Revenue Chart */}
+          <div className="bg-white rounded-xl border-2 border-corsican-clay-200 p-6">
+            <div className="flex items-center space-x-3 mb-6">
+              <div className="w-10 h-10 bg-corsican-clay-100 rounded-lg flex items-center justify-center">
+                <BarChart3 className="h-5 w-5 text-corsican-clay-600" />
+              </div>
+              <div>
+                <h2 className="text-xl font-serif font-bold text-corsican-clay-900">
+                  Évolution des revenus (6 derniers mois)
+                </h2>
+                <p className="text-sm text-corsican-clay-600">Revenus par source</p>
+              </div>
+            </div>
+            <ResponsiveContainer width="100%" height={300}>
+              <LineChart data={chartData.monthlyData}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                <XAxis
+                  dataKey="shortMonth"
+                  stroke="#6b7280"
+                  style={{ fontSize: '12px' }}
+                />
+                <YAxis
+                  stroke="#6b7280"
+                  style={{ fontSize: '12px' }}
+                  tickFormatter={(value) => `${value}€`}
+                />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: 'white',
+                    border: '1px solid #e5e7eb',
+                    borderRadius: '8px'
+                  }}
+                  formatter={(value: number) => [`${value.toFixed(0)}€`, '']}
+                />
+                <Legend />
+                <Line
+                  type="monotone"
+                  dataKey="reservationsRevenue"
+                  stroke="#3b82f6"
+                  strokeWidth={2}
+                  name="Réservations"
+                  dot={{ fill: '#3b82f6', r: 4 }}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="ordersRevenue"
+                  stroke="#8b5cf6"
+                  strokeWidth={2}
+                  name="Boutique"
+                  dot={{ fill: '#8b5cf6', r: 4 }}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="totalRevenue"
+                  stroke="#059669"
+                  strokeWidth={3}
+                  name="Total"
+                  dot={{ fill: '#059669', r: 5 }}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-6">
+            {/* Activity Bar Chart */}
+            <div className="bg-white rounded-xl border-2 border-corsican-clay-200 p-6">
+              <div className="flex items-center space-x-3 mb-6">
+                <div className="w-10 h-10 bg-corsican-sea-100 rounded-lg flex items-center justify-center">
+                  <BarChart3 className="h-5 w-5 text-corsican-sea-600" />
+                </div>
+                <div>
+                  <h2 className="text-xl font-serif font-bold text-corsican-clay-900">
+                    Activité mensuelle
+                  </h2>
+                  <p className="text-sm text-corsican-clay-600">Nombre de transactions</p>
+                </div>
+              </div>
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={chartData.monthlyData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                  <XAxis
+                    dataKey="shortMonth"
+                    stroke="#6b7280"
+                    style={{ fontSize: '12px' }}
+                  />
+                  <YAxis
+                    stroke="#6b7280"
+                    style={{ fontSize: '12px' }}
+                  />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: 'white',
+                      border: '1px solid #e5e7eb',
+                      borderRadius: '8px'
+                    }}
+                  />
+                  <Legend />
+                  <Bar
+                    dataKey="reservations"
+                    fill="#3b82f6"
+                    name="Réservations"
+                    radius={[8, 8, 0, 0]}
+                  />
+                  <Bar
+                    dataKey="orders"
+                    fill="#8b5cf6"
+                    name="Commandes"
+                    radius={[8, 8, 0, 0]}
+                  />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+
+            {/* Category Pie Chart */}
+            {chartData.categoryData.length > 0 && (
+              <div className="bg-white rounded-xl border-2 border-corsican-clay-200 p-6">
+                <div className="flex items-center space-x-3 mb-6">
+                  <div className="w-10 h-10 bg-corsican-maquis-100 rounded-lg flex items-center justify-center">
+                    <PieChartIcon className="h-5 w-5 text-corsican-maquis-600" />
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-serif font-bold text-corsican-clay-900">
+                      Ventes par catégorie
+                    </h2>
+                    <p className="text-sm text-corsican-clay-600">Répartition du CA boutique</p>
+                  </div>
+                </div>
+                <ResponsiveContainer width="100%" height={300}>
+                  <PieChart>
+                    <Pie
+                      data={chartData.categoryData}
+                      cx="50%"
+                      cy="50%"
+                      labelLine={false}
+                      label={({name, percent}) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                      outerRadius={80}
+                      fill="#8884d8"
+                      dataKey="value"
+                    >
+                      {chartData.categoryData.map((entry, index) => (
+                        <Cell
+                          key={`cell-${index}`}
+                          fill={[
+                            '#3b82f6',
+                            '#8b5cf6',
+                            '#ec4899',
+                            '#f59e0b',
+                            '#10b981',
+                            '#6366f1'
+                          ][index % 6]}
+                        />
+                      ))}
+                    </Pie>
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: 'white',
+                        border: '1px solid #e5e7eb',
+                        borderRadius: '8px'
+                      }}
+                      formatter={(value: number) => [`${value.toFixed(0)}€`, 'Ventes']}
+                    />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Recent Activity */}
       <div className="grid md:grid-cols-2 gap-6">
