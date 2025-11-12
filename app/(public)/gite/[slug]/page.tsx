@@ -27,6 +27,8 @@ interface Gite {
   address: string | null
   city: string | null
   postalCode: string | null
+  latitude: number | null
+  longitude: number | null
   images: string[]
   featuredImage: string | null
   virtualTourUrl: string | null
