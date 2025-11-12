@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { useParams, useRouter } from "next/navigation"
+import Image from "next/image"
 import PublicLayout from "@/components/layout/PublicLayout"
 import { ShoppingCart, ArrowLeft, Loader2, Minus, Plus, Package, ShoppingBag } from "lucide-react"
 import Link from "next/link"
@@ -140,12 +141,15 @@ export default function ProductPage() {
             {/* Images Gallery */}
             <div>
               {/* Main Image */}
-              <div className="aspect-square bg-gradient-to-br from-corsican-sand-100 to-corsican-maquis-100 rounded-2xl overflow-hidden mb-4">
+              <div className="aspect-square bg-gradient-to-br from-corsican-sand-100 to-corsican-maquis-100 rounded-2xl overflow-hidden mb-4 relative">
                 {product.images && product.images.length > 0 ? (
-                  <img
+                  <Image
                     src={product.images[selectedImage]}
                     alt={product.name}
-                    className="w-full h-full object-cover"
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                    priority={selectedImage === 0}
                   />
                 ) : (
                   <div className="flex items-center justify-center h-full">
@@ -161,16 +165,18 @@ export default function ProductPage() {
                     <button
                       key={index}
                       onClick={() => setSelectedImage(index)}
-                      className={`aspect-square rounded-lg overflow-hidden border-2 transition-all ${
+                      className={`aspect-square rounded-lg overflow-hidden border-2 transition-all relative ${
                         selectedImage === index
                           ? "border-corsican-maquis-600"
                           : "border-stone-200 hover:border-stone-300"
                       }`}
                     >
-                      <img
+                      <Image
                         src={image}
                         alt={`${product.name} ${index + 1}`}
-                        className="w-full h-full object-cover"
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 768px) 25vw, 12.5vw"
                       />
                     </button>
                   ))}

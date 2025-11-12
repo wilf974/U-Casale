@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import Image from "next/image"
 import PublicLayout from "@/components/layout/PublicLayout"
 import { ShoppingBag, Search, Filter, Loader2 } from "lucide-react"
 import Link from "next/link"
@@ -187,10 +188,12 @@ export default function BoutiquePage() {
                     {/* Product Image */}
                     <div className="aspect-square bg-gradient-to-br from-corsican-sand-100 to-corsican-maquis-100 relative overflow-hidden">
                       {product.images && product.images.length > 0 ? (
-                        <img
+                        <Image
                           src={product.images[0]}
                           alt={product.name}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          fill
+                          className="object-cover group-hover:scale-105 transition-transform duration-300"
+                          sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw"
                         />
                       ) : (
                         <div className="flex items-center justify-center h-full">
@@ -198,14 +201,14 @@ export default function BoutiquePage() {
                         </div>
                       )}
                       {product.stock === 0 && (
-                        <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
+                        <div className="absolute inset-0 bg-black/60 flex items-center justify-center z-10">
                           <span className="bg-red-600 text-white px-4 py-2 rounded-lg font-semibold">
                             Rupture de stock
                           </span>
                         </div>
                       )}
                       {product.stock > 0 && product.stock <= 5 && (
-                        <div className="absolute top-3 right-3">
+                        <div className="absolute top-3 right-3 z-10">
                           <span className="bg-orange-500 text-white px-3 py-1 rounded-full text-sm font-medium">
                             Stock limité
                           </span>
