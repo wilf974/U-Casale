@@ -3,6 +3,112 @@
 
 ---
 
+## 🔥 MISES À JOUR RÉCENTES - Session 12/11/2025
+
+### ✅ Phase 10 Complétée - Dashboard Améliorations & Corrections
+
+#### 🎨 Dashboard - Refonte Complète
+- ✅ **Widget Avis Récents** (Commit: 8355b9e)
+  - Ajout section testimonials dans activité récente (3 colonnes)
+  - Affichage 5 derniers avis publiés avec notes étoiles
+  - Badge type (Gîte/Boutique) et date
+  - Intégration API `/api/admin/stats` avec données testimonials
+
+- ✅ **Métriques Clés de Performance** (Commit: 2e9057e)
+  - Panier moyen réservations (calcul revenu/nombre)
+  - Panier moyen boutique (calcul revenu/nombre)
+  - Taux de fidélité client (% clients avec transactions multiples)
+  - Note moyenne des avis (aggregate Prisma)
+  - Compteur clients fidèles
+
+- ✅ **Refonte Design Dashboard** (Commit: f91c598)
+  - Header avec titre dégradé Corsican + date mise à jour
+  - Cartes revenus: hover effects (shadow-2xl + translate-y-1)
+  - Icônes avec fond semi-transparent + animation
+  - Métriques: barres de couleur indicatives sous valeurs
+  - Grille stats: élévation + border coloré au hover
+  - Indicateurs visuels (points colorés) pour status
+  - Typographie: uppercase + tracking-wide
+  - Graphiques: icônes dégradées avec ombres
+  - Section activité: headers uniformisés avec icônes
+
+#### 🔧 Corrections Techniques Critiques
+- ✅ **API Stripe** (Commits: b7337d0, 40a0c77)
+  - Version API: `2024-11-20.acacia` → `2025-10-29.clover`
+  - Lazy initialization (fonction `getStripe()`)
+  - Fix erreur build: "Neither apiKey nor config.authenticator"
+  - Implémentation dans `checkout/route.ts` et `orders/[id]/verify/route.ts`
+
+- ✅ **Modèle Order** (Commit: 6db0003)
+  - Correction: `shipping` → `shippingCost` (conforme schema Prisma)
+  - Correction: `orderItems` → `items` (nom relation Prisma)
+  - Ajout champ requis: `productName` dans OrderItem
+
+#### 📝 Blog & SEO (Commit: 7bdd379)
+- ✅ Lien Blog ajouté dans dashboard sidebar
+- ✅ Page édition article `/dashboard/blog/[id]/page.tsx`
+- ✅ Sitemap dynamique `/sitemap.xml` (produits + blog + pages)
+- ✅ Robots.txt `/robots.txt` pour crawlers
+
+#### 📊 API Améliorations
+- ✅ `/api/admin/stats` - Statistiques testimonials (total, publiés, avgRating)
+- ✅ `/api/admin/stats` - Métriques avancées (paniers moyens, fidélité)
+- ✅ `/api/admin/stats` - Analyse clients récurrents
+
+### 📦 Commits de la Session
+```
+40a0c77 - Fix: Lazy initialization de Stripe pour éviter erreur au build
+6db0003 - Fix: Correction champs Order dans checkout API
+b7337d0 - Fix: Mise à jour version API Stripe vers 2025-10-29.clover
+f91c598 - Dashboard: Refonte complète du design et UX
+2e9057e - Dashboard: Ajout métriques clés de performance
+8355b9e - Dashboard: Ajout widget avis récents et statistiques témoignages
+7bdd379 - Améliorations Blog & SEO
+```
+
+### 🚀 Déploiement VPS
+**Statut**: ⏳ En attente d'exécution
+
+**Commandes**:
+```bash
+cd /opt/apps/u-casale
+git pull origin claude/gite-booking-shop-011CV2RH3obCdpRK1jYoEuGw
+docker compose up -d --build
+docker ps | grep ucasale
+docker logs ucasale_app --tail 100 -f
+```
+
+### 🎯 Dashboard - Fonctionnalités Actuelles
+**Vue d'ensemble**:
+- 💰 3 cartes revenus (Total, Réservations, Boutique) avec hover effects
+- 📈 4 métriques clés (Paniers moyens, Fidélité, Note moyenne)
+- 📊 4 statistiques principales (Réservations, Commandes, Produits, Clients)
+- 🔢 4 statistiques secondaires (Catégories, Promos, Avis, Blog)
+
+**Graphiques**:
+- 📉 Évolution revenus 6 mois (3 courbes: résa, boutique, total)
+- 📊 Activité mensuelle (bar chart résa + commandes)
+- 🥧 Ventes par catégorie (pie chart CA boutique)
+
+**Activité Récente** (3 colonnes):
+- 🏠 5 dernières réservations
+- 🛍️ 5 dernières commandes
+- ⭐ 5 derniers avis clients
+
+### 🎨 Design System Appliqué
+**Couleurs**:
+- Corsican Clay: #C97855 → #8B5738 (terracotta)
+- Corsican Sea: #2D7D9E → #1E5A78 (bleu méditerranée)
+- Corsican Maquis: #6B8E6F → #4A6B4E (vert maquis)
+- Stone: #F5F5F5 → #78716C (neutres)
+
+**Animations**:
+- Hover: `hover:shadow-xl hover:-translate-y-1`
+- Transitions: `transition-all duration-300`
+- Transform: `transform`
+
+---
+
 ## 📋 VISION DU PROJET
 
 Site web professionnel combinant:
