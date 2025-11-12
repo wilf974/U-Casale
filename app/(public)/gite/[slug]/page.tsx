@@ -361,6 +361,41 @@ export default function GiteDetailPage() {
               </div>
             </div>
           </div>
+
+          {/* Carte de localisation */}
+          {gite.latitude && gite.longitude && (
+            <div className="mt-12">
+              <h2 className="text-2xl font-serif font-bold text-corsican-clay-900 mb-6">
+                Localisation
+              </h2>
+              <div className="bg-corsican-stone-100 rounded-2xl h-96 overflow-hidden shadow-lg">
+                <iframe
+                  src={`https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d23303.0!2d${gite.longitude}!3d${gite.latitude}!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zM!5e0!3m2!1sfr!2sfr!4v1234567890123!5m2!1sfr!2sfr`}
+                  width="100%"
+                  height="100%"
+                  style={{ border: 0 }}
+                  allowFullScreen
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  title={`Carte de ${gite.name}`}
+                />
+              </div>
+              {(gite.address || gite.city) && (
+                <div className="mt-4 p-4 bg-corsican-sand-50 rounded-lg flex items-start">
+                  <MapPin className="h-5 w-5 text-corsican-clay-600 mr-3 mt-0.5 flex-shrink-0" />
+                  <div>
+                    {gite.address && <p className="text-corsican-clay-900">{gite.address}</p>}
+                    {gite.city && (
+                      <p className="text-corsican-clay-700">
+                        {gite.city}
+                        {gite.postalCode && ` ${gite.postalCode}`}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </section>
     </PublicLayout>
