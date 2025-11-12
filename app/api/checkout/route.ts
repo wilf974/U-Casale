@@ -80,7 +80,7 @@ export async function POST(req: Request) {
         orderNumber,
         customerId: dbCustomer.id,
         subtotal,
-        shipping,
+        shippingCost: shipping,
         total,
         status: "PENDING",
         paymentStatus: "PENDING",
@@ -93,9 +93,10 @@ export async function POST(req: Request) {
           country: customer.country,
           phone: customer.phone,
         },
-        orderItems: {
+        items: {
           create: cart.map((item: CartItem) => ({
             productId: item.productId,
+            productName: item.name,
             quantity: item.quantity,
             price: item.price,
             total: item.price * item.quantity,
