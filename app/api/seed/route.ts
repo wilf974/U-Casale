@@ -56,8 +56,10 @@ export async function POST(req: Request) {
         cleaningFee: 50,
         minimumStay: 2,
         address: "Piscia Rossa",
-        city: "Piscia Rossa",
-        postalCode: "20000",
+        city: "Afa",
+        postalCode: "20167",
+        latitude: 42.0000,
+        longitude: 8.7833,
         images: [],
         amenities: {
           wifi: true,
