@@ -29,6 +29,7 @@ export default function Header() {
     { name: "Accueil", href: "/" },
     { name: "Le Gîte", href: "/gite" },
     { name: "Boutique", href: "/boutique" },
+    { name: "Blog", href: "/blog" },
     { name: "À Propos", href: "/a-propos" },
     { name: "Contact", href: "/contact" },
   ]

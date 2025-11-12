@@ -41,6 +41,11 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
+                <Link href="/blog" className="text-corsican-clay-100 hover:text-white text-sm transition-colors">
+                  Blog
+                </Link>
+              </li>
+              <li>
                 <Link href="/avis" className="text-corsican-clay-100 hover:text-white text-sm transition-colors">
                   Avis Clients
                 </Link>
