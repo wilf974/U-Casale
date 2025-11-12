@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, Suspense } from "react"
 import PublicLayout from "@/components/layout/PublicLayout"
 import { Calendar as CalendarIcon, Users, Loader2, ArrowRight, Info, Home } from "lucide-react"
 import { DayPicker } from "react-day-picker"
@@ -29,7 +29,7 @@ interface GiteOption {
   available: boolean
 }
 
-export default function ReserverPage() {
+function ReserverPageContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const giteSlug = searchParams.get("gite")
@@ -451,5 +451,21 @@ export default function ReserverPage() {
         </div>
       </section>
     </PublicLayout>
+  )
+}
+
+export default function ReserverPage() {
+  return (
+    <Suspense
+      fallback={
+        <PublicLayout>
+          <div className="min-h-screen flex items-center justify-center">
+            <Loader2 className="h-12 w-12 text-corsican-clay-600 animate-spin" />
+          </div>
+        </PublicLayout>
+      }
+    >
+      <ReserverPageContent />
+    </Suspense>
   )
 }
