@@ -37,8 +37,8 @@ enum UserRole {
 // ============================================
 
 model Customer {
-  id           String        @id @default(cuid())
-  email        String        @unique
+  id           String          @id @default(cuid())
+  email        String          @unique
   firstName    String
   lastName     String
   phone        String?
@@ -48,8 +48,10 @@ model Customer {
   country      String?
   reservations Reservation[]
   orders       Order[]
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
+  reviews      Review[]
+  loyaltyAccount LoyaltyAccount?
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
 
   @@map("customers")
 }
@@ -72,6 +74,7 @@ model Reservation {
   notes           String?
   customer        Customer          @relation(fields: [customerId], references: [id])
   customerId      String
+  reviews         Review[]
   createdAt       DateTime          @default(now())
   updatedAt       DateTime          @updatedAt
 
@@ -173,6 +176,7 @@ model Order {
   customer        Customer    @relation(fields: [customerId], references: [id])
   customerId      String
   items           OrderItem[]
+  reviews         Review[]
   subtotal        Float
   shippingCost    Float       @default(0)
   taxAmount       Float       @default(0)
@@ -288,4 +292,140 @@ model Testimonial {
   updatedAt   DateTime @updatedAt
 
   @@map("testimonials")
+}
+
+// ============================================
+// AVIS CLIENTS
+// ============================================
+
+model Review {
+  id          String    @id @default(cuid())
+  customer    Customer  @relation(fields: [customerId], references: [id])
+  customerId  String
+  // Can be linked to either an order or a reservation
+  orderId     String?
+  order       Order?    @relation(fields: [orderId], references: [id])
+  reservationId String?
+  reservation   Reservation? @relation(fields: [reservationId], references: [id])
+
+  rating      Int       // 1-5 stars
+  title       String?
+  comment     String
+  images      String[]  // Optional photos
+
+  helpful     Int       @default(0) // Count of helpful votes
+  reported    Boolean   @default(false)
+  verified    Boolean   @default(false) // Auto-verified if linked to order/reservation
+  published   Boolean   @default(true)
+
+  // Admin response
+  adminResponse String?
+  respondedAt   DateTime?
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@map("reviews")
+}
+
+// ============================================
+// PROGRAMME DE FIDÉLITÉ
+// ============================================
+
+model LoyaltyAccount {
+  id          String   @id @default(cuid())
+  customer    Customer @relation(fields: [customerId], references: [id])
+  customerId  String   @unique
+  points      Int      @default(0)
+  totalEarned Int      @default(0)
+  totalSpent  Int      @default(0)
+  tier        LoyaltyTier @default(BRONZE)
+  transactions LoyaltyTransaction[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("loyalty_accounts")
+}
+
+enum LoyaltyTier {
+  BRONZE
+  SILVER
+  GOLD
+  PLATINUM
+}
+
+model LoyaltyTransaction {
+  id          String         @id @default(cuid())
+  account     LoyaltyAccount @relation(fields: [accountId], references: [id])
+  accountId   String
+  type        LoyaltyTransactionType
+  points      Int            // Positive for earning, negative for spending
+  description String
+  orderId     String?
+  reservationId String?
+  expiresAt   DateTime?
+  createdAt   DateTime       @default(now())
+
+  @@map("loyalty_transactions")
+}
+
+enum LoyaltyTransactionType {
+  EARNED_PURCHASE
+  EARNED_RESERVATION
+  EARNED_REVIEW
+  EARNED_REFERRAL
+  EARNED_BIRTHDAY
+  REDEEMED
+  EXPIRED
+  ADJUSTED
+}
+
+// ============================================
+// NEWSLETTER
+// ============================================
+
+model NewsletterSubscriber {
+  id          String   @id @default(cuid())
+  email       String   @unique
+  firstName   String?
+  lastName    String?
+  status      SubscriberStatus @default(ACTIVE)
+  source      String?  // "footer", "checkout", "popup", etc.
+  tags        String[] // For segmentation
+  subscribedAt DateTime @default(now())
+  unsubscribedAt DateTime?
+  updatedAt   DateTime @updatedAt
+
+  @@map("newsletter_subscribers")
+}
+
+enum SubscriberStatus {
+  ACTIVE
+  UNSUBSCRIBED
+  BOUNCED
+}
+
+// ============================================
+// BLOG
+// ============================================
+
+model BlogPost {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  title       String
+  excerpt     String?
+  content     String   // Rich text / Markdown
+  featuredImage String?
+  author      String   @default("U Casale")
+  category    String?  // "recettes", "conseils", "actualites", etc.
+  tags        String[]
+  published   Boolean  @default(false)
+  publishedAt DateTime?
+  viewCount   Int      @default(0)
+  metaTitle   String?
+  metaDescription String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("blog_posts")
 }
