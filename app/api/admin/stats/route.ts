@@ -107,6 +107,47 @@ export async function GET() {
 
     const totalRevenue = (reservationsRevenue._sum.totalPrice || 0) + (ordersRevenue._sum.total || 0)
 
+    // Calculate averages and additional metrics
+    const avgReservationValue = totalReservations > 0
+      ? (reservationsRevenue._sum.totalPrice || 0) / totalReservations
+      : 0
+
+    const avgOrderValue = totalOrders > 0
+      ? (ordersRevenue._sum.total || 0) / totalOrders
+      : 0
+
+    // Get average testimonial rating
+    const avgTestimonialRating = await prisma.testimonial.aggregate({
+      where: { published: true },
+      _avg: { rating: true },
+    })
+
+    // Get customer loyalty stats (customers with multiple orders/reservations)
+    const repeatCustomers = await prisma.customer.findMany({
+      where: {
+        OR: [
+          { orders: { some: {} } },
+          { reservations: { some: {} } },
+        ],
+      },
+      include: {
+        _count: {
+          select: {
+            orders: true,
+            reservations: true,
+          },
+        },
+      },
+    })
+
+    const customersWithMultipleTransactions = repeatCustomers.filter(
+      (c) => (c._count.orders + c._count.reservations) > 1
+    ).length
+
+    const customerRetentionRate = totalCustomers > 0
+      ? (customersWithMultipleTransactions / totalCustomers) * 100
+      : 0
+
     return NextResponse.json({
       reservations: {
         total: totalReservations,
@@ -141,6 +182,13 @@ export async function GET() {
       testimonials: {
         total: totalTestimonials,
         published: publishedTestimonials,
+        avgRating: avgTestimonialRating._avg.rating || 0,
+      },
+      metrics: {
+        avgReservationValue,
+        avgOrderValue,
+        customerRetentionRate,
+        repeatCustomers: customersWithMultipleTransactions,
       },
       recentActivity: {
         reservations: recentReservations,

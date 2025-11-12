@@ -36,6 +36,13 @@ interface Stats {
   testimonials: {
     total: number
     published: number
+    avgRating: number
+  }
+  metrics: {
+    avgReservationValue: number
+    avgOrderValue: number
+    customerRetentionRate: number
+    repeatCustomers: number
   }
   revenue: {
     total: number
@@ -193,6 +200,40 @@ export default function DashboardPage() {
           </div>
           <p className="text-4xl font-bold mb-2">{stats.revenue.orders.toFixed(0)}€</p>
           <p className="text-sm opacity-90">{stats.orders.total} commandes</p>
+        </div>
+      </div>
+
+      {/* Key Metrics */}
+      <div className="bg-gradient-to-br from-stone-50 to-stone-100 rounded-xl p-6 mb-8 border-2 border-stone-200">
+        <h2 className="text-lg font-semibold text-stone-900 mb-4 flex items-center gap-2">
+          <TrendingUp className="h-5 w-5" />
+          Métriques clés
+        </h2>
+        <div className="grid md:grid-cols-4 gap-6">
+          <div className="bg-white rounded-lg p-4">
+            <p className="text-sm text-stone-600 mb-1">Panier moyen (Résa)</p>
+            <p className="text-2xl font-bold text-stone-900">{stats.metrics.avgReservationValue.toFixed(0)}€</p>
+          </div>
+          <div className="bg-white rounded-lg p-4">
+            <p className="text-sm text-stone-600 mb-1">Panier moyen (Boutique)</p>
+            <p className="text-2xl font-bold text-stone-900">{stats.metrics.avgOrderValue.toFixed(0)}€</p>
+          </div>
+          <div className="bg-white rounded-lg p-4">
+            <p className="text-sm text-stone-600 mb-1">Taux de fidélité</p>
+            <div className="flex items-baseline gap-2">
+              <p className="text-2xl font-bold text-stone-900">{stats.metrics.customerRetentionRate.toFixed(1)}%</p>
+              <p className="text-xs text-stone-500">({stats.metrics.repeatCustomers} clients)</p>
+            </div>
+          </div>
+          <div className="bg-white rounded-lg p-4">
+            <p className="text-sm text-stone-600 mb-1">Note moyenne</p>
+            <div className="flex items-center gap-2">
+              <p className="text-2xl font-bold text-stone-900">{stats.testimonials.avgRating.toFixed(1)}</p>
+              <div className="flex items-center">
+                <Star className="h-5 w-5 fill-yellow-400 text-yellow-400" />
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
