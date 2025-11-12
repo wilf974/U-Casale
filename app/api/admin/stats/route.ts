@@ -31,6 +31,9 @@ export async function GET() {
       activePromoCodes,
       recentReservations,
       recentOrders,
+      recentTestimonials,
+      totalTestimonials,
+      publishedTestimonials,
     ] = await Promise.all([
       // Reservations stats
       prisma.reservation.count(),
@@ -89,6 +92,17 @@ export async function GET() {
           },
         },
       }),
+
+      // Recent testimonials
+      prisma.testimonial.findMany({
+        take: 5,
+        orderBy: { createdAt: "desc" },
+        where: { published: true },
+      }),
+
+      // Testimonials stats
+      prisma.testimonial.count(),
+      prisma.testimonial.count({ where: { published: true } }),
     ])
 
     const totalRevenue = (reservationsRevenue._sum.totalPrice || 0) + (ordersRevenue._sum.total || 0)
@@ -124,9 +138,14 @@ export async function GET() {
         reservations: reservationsRevenue._sum.totalPrice || 0,
         orders: ordersRevenue._sum.total || 0,
       },
+      testimonials: {
+        total: totalTestimonials,
+        published: publishedTestimonials,
+      },
       recentActivity: {
         reservations: recentReservations,
         orders: recentOrders,
+        testimonials: recentTestimonials,
       },
     })
   } catch (error) {

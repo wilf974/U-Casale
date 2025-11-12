@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Calendar, Package, ShoppingBag, Users, Euro, TrendingUp, AlertTriangle, Ticket, Loader2, BarChart3, PieChart as PieChartIcon } from "lucide-react"
+import { Calendar, Package, ShoppingBag, Users, Euro, TrendingUp, AlertTriangle, Ticket, Loader2, BarChart3, PieChart as PieChartIcon, Star, MessageSquare } from "lucide-react"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import Link from "next/link"
@@ -33,6 +33,10 @@ interface Stats {
   promoCodes: {
     active: number
   }
+  testimonials: {
+    total: number
+    published: number
+  }
   revenue: {
     total: number
     reservations: number
@@ -60,6 +64,15 @@ interface Stats {
         firstName: string
         lastName: string
       }
+      createdAt: string
+    }>
+    testimonials: Array<{
+      id: string
+      customerName: string
+      content: string
+      rating: number
+      type: string
+      verified: boolean
       createdAt: string
     }>
   }
@@ -234,7 +247,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Secondary Stats */}
-      <div className="grid md:grid-cols-3 gap-6 mb-8">
+      <div className="grid md:grid-cols-4 gap-6 mb-8">
         <Link href="/dashboard/categories" className="bg-white rounded-xl border-2 border-corsican-clay-200 p-4 hover:shadow-lg transition-all">
           <div className="flex items-center justify-between">
             <div>
@@ -252,6 +265,16 @@ export default function DashboardPage() {
               <p className="text-sm text-corsican-clay-600">Codes promo actifs</p>
             </div>
             <Ticket className="h-8 w-8 text-corsican-clay-400" />
+          </div>
+        </Link>
+
+        <Link href="/dashboard/temoignages" className="bg-white rounded-xl border-2 border-corsican-clay-200 p-4 hover:shadow-lg transition-all">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-2xl font-bold text-corsican-clay-900">{stats.testimonials.published}</p>
+              <p className="text-sm text-corsican-clay-600">Avis publiés</p>
+            </div>
+            <MessageSquare className="h-8 w-8 text-corsican-clay-400" />
           </div>
         </Link>
 
@@ -439,7 +462,7 @@ export default function DashboardPage() {
       )}
 
       {/* Recent Activity */}
-      <div className="grid md:grid-cols-2 gap-6">
+      <div className="grid md:grid-cols-3 gap-6">
         {/* Recent Reservations */}
         <div className="bg-white rounded-xl border-2 border-corsican-clay-200 p-6">
           <h2 className="text-lg font-semibold text-corsican-clay-900 mb-4">
@@ -493,6 +516,55 @@ export default function DashboardPage() {
                     <p className="text-xs text-corsican-clay-600">
                       {format(new Date(order.createdAt), "dd/MM", { locale: fr })}
                     </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Recent Testimonials */}
+        <div className="bg-white rounded-xl border-2 border-corsican-clay-200 p-6">
+          <h2 className="text-lg font-semibold text-corsican-clay-900 mb-4">
+            Avis récents
+          </h2>
+          {stats.recentActivity.testimonials.length === 0 ? (
+            <p className="text-sm text-corsican-clay-600 text-center py-4">Aucun avis</p>
+          ) : (
+            <div className="space-y-3">
+              {stats.recentActivity.testimonials.map((testimonial) => (
+                <div key={testimonial.id} className="p-3 bg-corsican-sand-50 rounded-lg">
+                  <div className="flex items-center justify-between mb-2">
+                    <p className="text-sm font-medium text-corsican-clay-900">
+                      {testimonial.customerName}
+                    </p>
+                    <div className="flex items-center gap-1">
+                      {[...Array(5)].map((_, i) => (
+                        <Star
+                          key={i}
+                          className={`h-3 w-3 ${
+                            i < testimonial.rating
+                              ? "fill-yellow-400 text-yellow-400"
+                              : "text-stone-300"
+                          }`}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                  <p className="text-xs text-corsican-clay-600 line-clamp-2 mb-2">
+                    {testimonial.content}
+                  </p>
+                  <div className="flex items-center justify-between text-xs">
+                    <span className={`px-2 py-0.5 rounded-full ${
+                      testimonial.type === "gite"
+                        ? "bg-blue-100 text-blue-700"
+                        : "bg-purple-100 text-purple-700"
+                    }`}>
+                      {testimonial.type === "gite" ? "Gîte" : "Boutique"}
+                    </span>
+                    <span className="text-corsican-clay-500">
+                      {format(new Date(testimonial.createdAt), "dd/MM", { locale: fr })}
+                    </span>
                   </div>
                 </div>
               ))}
