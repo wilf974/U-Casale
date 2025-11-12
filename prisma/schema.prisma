@@ -57,16 +57,87 @@ model Customer {
 }
 
 // ============================================
+// GÎTES
+// ============================================
+
+model Gite {
+  id              String        @id @default(cuid())
+  slug            String        @unique
+  name            String
+  description     String?
+  shortDescription String?
+
+  // Capacité
+  maxGuests       Int
+  bedrooms        Int           @default(1)
+  beds            Int           @default(1)
+  bathrooms       Int           @default(1)
+
+  // Tarification
+  pricePerNight   Float
+  cleaningFee     Float         @default(0)
+  minimumStay     Int           @default(1)
+  seasonalPricing Json?         // Seasonal price adjustments
+
+  // Localisation
+  address         String?
+  city            String?
+  postalCode      String?
+  latitude        Float?
+  longitude       Float?
+
+  // Médias
+  images          String[]      // Array of image URLs
+  featuredImage   String?
+  virtualTourUrl  String?       // URL visite 360°
+
+  // Équipements & Services
+  amenities       Json?         // {wifi: true, parking: true, kitchen: true, etc.}
+  equipment       String?       // Liste textuelle détaillée
+
+  // Disponibilité
+  available       Boolean       @default(true)
+  blockedDates    Json          @default("[]") // Array of blocked date ranges
+
+  // Règlement & Infos
+  rules           String?
+  checkInTime     String?       @default("15:00")
+  checkOutTime    String?       @default("11:00")
+
+  // SEO
+  metaTitle       String?
+  metaDescription String?
+
+  // Relations
+  reservations    Reservation[]
+
+  // Ordre d'affichage
+  displayOrder    Int           @default(0)
+  featured        Boolean       @default(false)
+
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  @@map("gites")
+}
+
+// ============================================
 // RÉSERVATIONS GÎTE
 // ============================================
 
 model Reservation {
   id              String            @id @default(cuid())
+
+  // Lien vers le gîte réservé
+  gite            Gite              @relation(fields: [giteId], references: [id])
+  giteId          String
+
   checkIn         DateTime
   checkOut        DateTime
   guests          Int
   nights          Int
   pricePerNight   Float
+  cleaningFee     Float             @default(0)
   totalPrice      Float
   status          ReservationStatus @default(PENDING)
   paymentStatus   PaymentStatus     @default(PENDING)
@@ -96,20 +167,18 @@ enum PaymentStatus {
 }
 
 // ============================================
-// CONFIGURATION DU GÎTE
+// CONFIGURATION GLOBALE GÎTES (Optionnel)
 // ============================================
 
 model GiteConfig {
   id              String   @id @default(cuid())
-  pricePerNight   Float
-  maxGuests       Int
-  minimumStay     Int      @default(1)
-  blockedDates    Json     // Array of blocked date ranges
-  seasonalPricing Json?    // Seasonal price adjustments
-  cleaningFee     Float    @default(0)
   taxRate         Float    @default(0)
-  description     String?
-  rules           String?
+  currency        String   @default("EUR")
+  defaultCheckIn  String   @default("15:00")
+  defaultCheckOut String   @default("11:00")
+  bookingEmail    String?
+  termsAndConditions String?
+  cancellationPolicy String?
   updatedAt       DateTime @updatedAt
 
   @@map("gite_config")
