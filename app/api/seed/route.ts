@@ -27,18 +27,55 @@ export async function POST(req: Request) {
       },
     })
 
-    // Create default gite configuration
+    // Create global gite configuration (settings globaux)
     const giteConfig = await prisma.giteConfig.create({
       data: {
         id: "default",
-        pricePerNight: 150,
-        maxGuests: 6,
-        minimumStay: 2,
-        blockedDates: [],
-        cleaningFee: 50,
         taxRate: 0.1,
-        description: "Gîte authentique au cœur de la Corse",
-        rules: "Non-fumeur. Animaux acceptés sur demande.",
+        currency: "EUR",
+        defaultCheckIn: "15:00",
+        defaultCheckOut: "11:00",
+        bookingEmail: "reservations@ucasale.com",
+        termsAndConditions: "Conditions générales de location disponibles sur demande.",
+        cancellationPolicy: "Annulation gratuite jusqu'à 7 jours avant l'arrivée.",
+      },
+    })
+
+    // Create default gite (propriété individuelle)
+    const defaultGite = await prisma.gite.create({
+      data: {
+        slug: "u-casale-piscia-rossa",
+        name: "U Casale",
+        description: "Gîte authentique au cœur de la Corse, situé à Piscia Rossa. Profitez d'une vue imprenable sur le maquis corse et les montagnes environnantes.",
+        shortDescription: "Gîte de caractère pour 6 personnes à Piscia Rossa",
+        maxGuests: 6,
+        bedrooms: 3,
+        beds: 4,
+        bathrooms: 2,
+        pricePerNight: 150,
+        cleaningFee: 50,
+        minimumStay: 2,
+        address: "Piscia Rossa",
+        city: "Piscia Rossa",
+        postalCode: "20000",
+        images: [],
+        amenities: {
+          wifi: true,
+          parking: true,
+          airConditioning: true,
+          kitchen: true,
+          washingMachine: true,
+          tv: true,
+          terrace: true,
+          garden: true,
+        },
+        available: true,
+        blockedDates: [],
+        rules: "Non-fumeur. Animaux acceptés sur demande. Merci de respecter le calme des lieux.",
+        checkInTime: "15:00",
+        checkOutTime: "11:00",
+        displayOrder: 1,
+        featured: true,
       },
     })
 
@@ -72,6 +109,7 @@ export async function POST(req: Request) {
       data: {
         admin: { email: admin.email },
         giteConfig: { id: giteConfig.id },
+        defaultGite: { slug: defaultGite.slug, name: defaultGite.name },
         siteSettings: { id: siteSettings.id },
         category: { slug: category.slug },
       },
