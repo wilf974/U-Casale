@@ -9,7 +9,9 @@ import { addDays, differenceInDays, format } from "date-fns"
 import { useRouter } from "next/navigation"
 import "react-day-picker/dist/style.css"
 
-interface GiteConfig {
+interface Gite {
+  id: string
+  name: string
   pricePerNight: number
   minimumStay: number
   maxGuests: number
@@ -23,7 +25,7 @@ export default function ReserverPage() {
   const [checkOut, setCheckOut] = useState<Date | undefined>()
   const [guests, setGuests] = useState(2)
   const [unavailableDates, setUnavailableDates] = useState<Date[]>([])
-  const [giteConfig, setGiteConfig] = useState<GiteConfig | null>(null)
+  const [gite, setGite] = useState<Gite | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
 
@@ -42,7 +44,7 @@ export default function ReserverPage() {
         if (response.ok) {
           const dates = data.unavailableDates.map((d: string) => new Date(d))
           setUnavailableDates(dates)
-          setGiteConfig(data.giteConfig)
+          setGite(data.gite)
         }
       } catch (err) {
         console.error("Error fetching disponibilites:", err)
@@ -54,19 +56,19 @@ export default function ReserverPage() {
 
   // Calculer le prix
   const calculatePrice = () => {
-    if (!checkIn || !checkOut || !giteConfig) return null
+    if (!checkIn || !checkOut || !gite) return null
 
     const nights = differenceInDays(checkOut, checkIn)
     if (nights < 1) return null
 
-    const subtotal = nights * giteConfig.pricePerNight
-    const cleaningFee = giteConfig.cleaningFee
-    const taxAmount = (subtotal + cleaningFee) * giteConfig.taxRate
+    const subtotal = nights * gite.pricePerNight
+    const cleaningFee = gite.cleaningFee
+    const taxAmount = (subtotal + cleaningFee) * gite.taxRate
     const total = subtotal + cleaningFee + taxAmount
 
     return {
       nights,
-      pricePerNight: giteConfig.pricePerNight,
+      pricePerNight: gite.pricePerNight,
       subtotal,
       cleaningFee,
       taxAmount,
@@ -82,15 +84,15 @@ export default function ReserverPage() {
       return
     }
 
-    if (!giteConfig) {
+    if (!gite) {
       setError("Configuration du gîte non chargée")
       return
     }
 
     const nights = differenceInDays(checkOut, checkIn)
 
-    if (nights < giteConfig.minimumStay) {
-      setError(`Le séjour minimum est de ${giteConfig.minimumStay} nuits`)
+    if (nights < gite.minimumStay) {
+      setError(`Le séjour minimum est de ${gite.minimumStay} nuits`)
       return
     }
 
@@ -144,10 +146,10 @@ export default function ReserverPage() {
                 Choisissez vos dates
               </h2>
 
-              {giteConfig && (
+              {gite && (
                 <div className="mb-6 p-4 bg-corsican-sand-50 rounded-lg text-sm text-corsican-clay-700">
                   <Info className="h-4 w-4 inline mr-2" />
-                  Séjour minimum : {giteConfig.minimumStay} nuits
+                  Séjour minimum : {gite.minimumStay} nuits
                 </div>
               )}
 
@@ -221,7 +223,7 @@ export default function ReserverPage() {
                     type="button"
                     onClick={() =>
                       setGuests(
-                        Math.min(giteConfig?.maxGuests || 6, guests + 1)
+                        Math.min(gite?.maxGuests || 6, guests + 1)
                       )
                     }
                     className="w-10 h-10 rounded-full border-2 border-corsican-clay-600 text-corsican-clay-600 font-semibold hover:bg-corsican-clay-50 transition"
@@ -229,9 +231,9 @@ export default function ReserverPage() {
                     +
                   </button>
                 </div>
-                {giteConfig && (
+                {gite && (
                   <p className="text-sm text-corsican-clay-600 mt-2">
-                    Maximum {giteConfig.maxGuests} personnes
+                    Maximum {gite.maxGuests} personnes
                   </p>
                 )}
               </div>
@@ -276,7 +278,7 @@ export default function ReserverPage() {
                             <span>{pricing.cleaningFee}€</span>
                           </div>
                           <div className="flex justify-between text-corsican-clay-700">
-                            <span>Taxe de séjour ({(giteConfig?.taxRate || 0) * 100}%)</span>
+                            <span>Taxe de séjour ({(gite?.taxRate || 0) * 100}%)</span>
                             <span>{pricing.taxAmount.toFixed(2)}€</span>
                           </div>
                         </div>
