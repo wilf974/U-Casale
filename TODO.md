@@ -213,6 +213,395 @@ docker logs ucasale_app --tail 100 -f
 
 ---
 
+## 🎯 AMÉLIORATIONS FUTURES
+
+### 🎨 Améliorations UX
+
+#### Page Gestion Réservations
+- [ ] **Actions groupées**
+  - Sélection multiple des réservations
+  - Changement de statut en masse
+  - Export groupé des réservations sélectionnées
+  - Suppression en masse
+- [ ] **Filtres avancés**
+  - Par statut (confirmée, en attente, annulée)
+  - Par période (date arrivée/départ)
+  - Par nombre de personnes
+  - Par montant (fourchette)
+- [ ] **Tri des colonnes**
+  - Par date de réservation
+  - Par date d'arrivée
+  - Par montant
+  - Par nom de client
+- [ ] **Recherche avancée**
+  - Par numéro de réservation
+  - Par nom client
+  - Par email
+  - Par téléphone
+
+#### Système de Notifications en Temps Réel
+- [ ] **Notifications dashboard**
+  - Nouvelle réservation
+  - Nouvelle commande
+  - Nouveau commentaire/avis
+  - Stock faible (produits)
+  - Paiement reçu
+- [ ] **Notifications push** (optionnel)
+  - Push navigateur pour admin
+  - Emails instantanés
+  - SMS pour réservations urgentes
+- [ ] **Centre de notifications**
+  - Historique des notifications
+  - Marquage lu/non lu
+  - Filtres par type
+  - Actions rapides depuis la notification
+
+#### Dark Mode Dashboard
+- [ ] Thème sombre complet
+- [ ] Toggle dans les paramètres utilisateur
+- [ ] Respect préférence système (prefers-color-scheme)
+- [ ] Adaptation des graphiques et couleurs
+- [ ] Sauvegarde préférence en localStorage
+
+#### Autres Améliorations UX
+- [ ] **Drag & drop** pour réorganiser photos produits
+- [ ] **Aperçu en temps réel** lors de l'édition de contenu
+- [ ] **Auto-save** pour les formulaires longs
+- [ ] **Raccourcis clavier** pour actions courantes
+- [ ] **Barre de recherche globale** (recherche unifiée dans tout le dashboard)
+
+---
+
+### 🚀 Fonctionnalités Supplémentaires
+
+#### Gestion Codes Promo - Interface Dédiée
+- [ ] **CRUD Codes Promo**
+  - Création codes personnalisés
+  - Types: pourcentage ou montant fixe
+  - Application: boutique et/ou réservations
+  - Date début/fin de validité
+  - Limite d'utilisation (globale ou par client)
+  - Conditions: montant minimum, catégories spécifiques
+- [ ] **Tableau de bord codes promo**
+  - Liste de tous les codes actifs/expirés
+  - Statistiques d'utilisation
+  - Nombre d'utilisations
+  - Revenu généré vs réduction accordée
+  - Export rapports codes promo
+- [ ] **Page gestion promotions**
+  - Promotions automatiques (ex: "10% sur catégorie X")
+  - Promotions saisonnières
+  - Bundle produits
+  - Offres "3 pour 2"
+
+#### Système Newsletter
+- [ ] **Gestion des abonnés**
+  - Liste des inscrits
+  - Import/export CSV
+  - Segmentation (clients réservations, clients boutique, prospects)
+  - Gestion désabonnements (RGPD)
+- [ ] **Création de campagnes**
+  - Éditeur email WYSIWYG
+  - Templates préconçus
+  - Personnalisation (nom, historique)
+  - Aperçu multi-devices
+  - Test envoi
+- [ ] **Automatisation**
+  - Email bienvenue nouveaux clients
+  - Email anniversaire
+  - Email réengagement (clients inactifs)
+  - Relance panier abandonné
+- [ ] **Statistiques newsletter**
+  - Taux d'ouverture
+  - Taux de clic
+  - Désabonnements
+  - Conversions générées
+
+#### Chat Support Client
+- [ ] **Widget chat** sur pages publiques
+- [ ] **Interface admin** pour répondre
+- [ ] **Messages prédéfinis** (FAQ rapides)
+- [ ] **Notifications** nouveaux messages
+- [ ] **Historique conversations** par client
+- [ ] **Chatbot basique** pour questions courantes (optionnel)
+
+#### Multi-langue (FR/EN)
+- [ ] **Configuration i18n**
+  - next-intl ou react-i18next
+  - Fichiers de traduction JSON
+- [ ] **Traduction interface publique**
+  - Pages principales
+  - Navigation
+  - Produits et catégories
+  - Formulaires
+- [ ] **Dashboard admin**
+  - Gestion des traductions
+  - Interface de saisie multi-langue
+  - Traduction descriptions produits
+  - Traduction contenu blog
+- [ ] **Sélecteur de langue**
+  - Détection automatique navigateur
+  - Switch FR/EN visible
+  - Sauvegarde préférence
+
+#### Autres Fonctionnalités
+- [ ] **Système de Reviews produits** (côté public)
+  - Formulaire d'avis après achat
+  - Notation étoiles
+  - Upload photos par clients
+  - Modération admin
+- [ ] **Programme de fidélité**
+  - Points par achat
+  - Récompenses/réductions
+  - Niveaux de fidélité
+  - Dashboard client pour voir ses points
+- [ ] **Wishlist/Liste de souhaits** (boutique)
+- [ ] **Comparateur de produits**
+- [ ] **Gift cards/Cartes cadeaux**
+
+---
+
+### 📱 Mobile
+
+#### Progressive Web App (PWA)
+- [ ] **Configuration PWA**
+  - Service Worker
+  - Manifest.json
+  - Icons multiples résolutions
+  - Thème colors
+- [ ] **Installation sur écran d'accueil**
+  - Prompt d'installation
+  - Instructions utilisateur
+- [ ] **Mode offline basique**
+  - Cache pages principales
+  - Cache images
+  - Fallback offline.html
+- [ ] **Fonctionnalités PWA**
+  - Notifications push (réservations, commandes)
+  - Badge compteur
+  - Splash screen
+
+#### Application Mobile Native (React Native)
+- [ ] **Setup projet**
+  - React Native CLI ou Expo
+  - Navigation (React Navigation)
+  - State management (Redux/Zustand)
+- [ ] **Fonctionnalités app**
+  - Parcourir catalogue produits
+  - Réserver le gîte
+  - Panier et checkout
+  - Compte client
+  - Historique réservations/commandes
+  - Notifications push
+  - Scan QR codes (promos, check-in)
+- [ ] **Publication**
+  - Apple App Store
+  - Google Play Store
+  - Icônes et screenshots
+  - Description et ASO
+
+#### Optimisations Mobile Existantes
+- [ ] **Améliorer performances mobiles**
+  - Lighthouse mobile score > 90
+  - Réduire taille bundle JavaScript
+  - Optimiser images spécifiquement mobile
+- [ ] **Gestures mobiles**
+  - Swipe entre photos produits
+  - Pull-to-refresh
+  - Tap zones optimisées (44x44px minimum)
+- [ ] **Clavier mobile**
+  - Input types corrects (email, tel, number)
+  - Autocomplete approprié
+  - Validation en temps réel
+
+---
+
+### ⚡ Performance
+
+#### Optimisation Images Blog
+- [ ] **Conversion au Next.js Image component**
+  - Remplacer balises `<img>` par `<Image>`
+  - Définir sizes appropriés
+  - Priority pour images above-the-fold
+- [ ] **Formats modernes**
+  - WebP/AVIF automatique
+  - Fallback JPEG/PNG
+- [ ] **Lazy loading**
+  - Images articles blog
+  - Thumbnails liste articles
+- [ ] **Compression**
+  - Optimiser qualité vs taille
+  - Sharp configuration
+
+#### Mise en Cache Avancée
+- [ ] **ISR (Incremental Static Regeneration)**
+  - Pages produits : revalidate 3600 (1h)
+  - Articles blog : revalidate 7200 (2h)
+  - Page gîte : revalidate 1800 (30min)
+- [ ] **Cache API Routes**
+  - Cache-Control headers
+  - SWR (Stale-While-Revalidate)
+- [ ] **CDN Configuration**
+  - Cache assets statiques (images, fonts)
+  - Edge caching pour pages publiques
+- [ ] **Redis cache** (optionnel)
+  - Cache requêtes DB fréquentes
+  - Cache calculs complexes
+  - Sessions utilisateur
+
+#### Server-Side Rendering Optimisé
+- [ ] **Streaming SSR**
+  - React 18 Suspense boundaries
+  - Streaming HTML partiel
+  - Loading states granulaires
+- [ ] **Parallel data fetching**
+  - Promise.all pour données indépendantes
+  - Éviter waterfalls
+- [ ] **Partial Prerendering** (Next.js 14+)
+  - Combiner statique + dynamique
+  - Optimiser shell page
+
+#### Bundle Optimization
+- [ ] **Code splitting**
+  - Dynamic imports pour composants lourds
+  - Route-based splitting
+- [ ] **Tree shaking**
+  - Vérifier unused exports
+  - Analyser bundle avec @next/bundle-analyzer
+- [ ] **Dépendances**
+  - Remplacer libraries lourdes par alternatives légères
+  - Vérifier duplicates dependencies
+  - Utiliser barrel imports optimisés
+
+#### Database Performance
+- [ ] **Prisma optimizations**
+  - Indexes sur colonnes fréquemment requêtées
+  - Select minimal (éviter select *)
+  - Pagination côté DB
+- [ ] **Query optimization**
+  - Analyser slow queries
+  - N+1 queries prevention
+  - Use of include vs select
+
+#### Monitoring Performance
+- [ ] **Real User Monitoring (RUM)**
+  - Core Web Vitals tracking
+  - Vercel Analytics
+- [ ] **Error tracking**
+  - Sentry integration
+  - Source maps production
+- [ ] **Performance budget**
+  - Alertes si bundle > X kb
+  - Lighthouse CI dans GitHub Actions
+
+---
+
+### 📊 Analytics & Reporting
+
+#### Graphiques Détaillés par Période
+- [ ] **Sélecteur de période**
+  - Aujourd'hui
+  - 7 derniers jours
+  - 30 derniers jours
+  - 3 derniers mois
+  - 6 derniers mois
+  - 1 an
+  - Période personnalisée (date picker)
+- [ ] **Graphiques revenus avancés**
+  - Comparaison année précédente (Y-o-Y)
+  - Tendances et prévisions
+  - Segmentation par source (réservations vs boutique)
+  - Breakdown par catégorie de produits
+- [ ] **Graphiques produits**
+  - Top 10 produits vendus
+  - Produits à faible rotation
+  - Marge par produit
+  - Évolution stock dans le temps
+- [ ] **Graphiques clients**
+  - Nouveaux clients vs récurrents
+  - Valeur à vie client (LTV)
+  - Cohorte analysis
+  - Taux de rétention
+- [ ] **Graphiques réservations**
+  - Taux d'occupation par mois
+  - Durée moyenne séjour
+  - Lead time (délai entre réservation et arrivée)
+  - Taux d'annulation
+
+#### Export Excel/CSV Avancé
+- [ ] **Export configurable**
+  - Choix des colonnes à exporter
+  - Filtres avant export
+  - Format: CSV, XLSX, PDF
+- [ ] **Rapports prêts à l'emploi**
+  - Rapport mensuel ventes
+  - Rapport annuel comptable
+  - Rapport stock valorisé
+  - Rapport clients (segmentation)
+  - Rapport réservations (occupancy report)
+- [ ] **Templates Excel**
+  - Formatage professionnel
+  - Graphiques inclus
+  - Tableaux croisés dynamiques
+- [ ] **Export automatique**
+  - Génération programmée (ex: 1er de chaque mois)
+  - Sauvegarde sur serveur ou cloud (S3)
+
+#### Rapport Mensuel Automatique par Email
+- [ ] **Configuration emails automatiques**
+  - Destinataires (admin, comptable)
+  - Fréquence (hebdomadaire, mensuel)
+  - Jour et heure d'envoi
+- [ ] **Contenu du rapport**
+  - Résumé exécutif (KPIs clés)
+  - Revenus du mois
+  - Comparaison mois précédent
+  - Top produits
+  - Nouvelles réservations
+  - Taux d'occupation
+  - Alertes (stock faible, objectifs non atteints)
+- [ ] **PDF attaché**
+  - Rapport complet en PDF
+  - Graphiques et tableaux
+  - Design professionnel
+- [ ] **Personnalisation**
+  - Templates modifiables
+  - Sélection des sections à inclure
+  - Branding entreprise
+
+#### Dashboard Analytics Avancé
+- [ ] **Tableau de bord dynamique**
+  - Widgets déplaçables (drag & drop)
+  - Sauvegarde layout personnalisé
+  - Mode plein écran pour graphiques
+- [ ] **Objectifs et KPIs**
+  - Définir objectifs mensuels
+  - Progress bars vers objectifs
+  - Alertes si objectif en danger
+- [ ] **Comparaisons**
+  - Année en cours vs année précédente
+  - Budget vs réalisé
+  - Prévisions vs réel
+- [ ] **Heatmaps**
+  - Calendrier d'occupation gîte
+  - Jours/heures de vente boutique
+
+#### Intégrations Analytics Externes
+- [ ] **Google Analytics 4**
+  - Enhanced ecommerce tracking
+  - Événements personnalisés
+  - Conversion tracking
+- [ ] **Facebook Pixel** (si ads Facebook)
+- [ ] **Google Tag Manager**
+  - Gestion centralisée des tags
+  - Événements personnalisés
+- [ ] **Hotjar ou Microsoft Clarity**
+  - Heatmaps comportement utilisateur
+  - Session recordings
+  - Feedback utilisateur
+
+---
+
 ## 📋 VISION DU PROJET
 
 Site web professionnel combinant:
