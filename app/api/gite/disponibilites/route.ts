@@ -7,6 +7,7 @@ export async function GET(req: Request) {
     const { searchParams } = new URL(req.url)
     const startDate = searchParams.get("start")
     const endDate = searchParams.get("end")
+    const giteId = searchParams.get("giteId")
 
     if (!startDate || !endDate) {
       return NextResponse.json(
@@ -18,21 +19,31 @@ export async function GET(req: Request) {
     const start = new Date(startDate)
     const end = new Date(endDate)
 
-    // Récupérer la configuration du gîte
-    const giteConfig = await prisma.giteConfig.findFirst({
-      where: { id: "default" },
-    })
+    // Si un giteId est fourni, récupérer ce gîte spécifique
+    // Sinon, prendre le premier gîte disponible (compatibilité)
+    let gite
+    if (giteId) {
+      gite = await prisma.gite.findUnique({
+        where: { id: giteId },
+      })
+    } else {
+      gite = await prisma.gite.findFirst({
+        where: { available: true },
+        orderBy: { displayOrder: "asc" },
+      })
+    }
 
-    if (!giteConfig) {
+    if (!gite) {
       return NextResponse.json(
-        { error: "Gite configuration not found" },
+        { error: "Gite not found" },
         { status: 404 }
       )
     }
 
-    // Récupérer toutes les réservations confirmées ou en attente dans la période
+    // Récupérer les réservations confirmées ou en attente pour CE gîte
     const reservations = await prisma.reservation.findMany({
       where: {
+        giteId: gite.id,
         status: {
           in: [ReservationStatus.CONFIRMED, ReservationStatus.PENDING],
         },
@@ -86,8 +97,8 @@ export async function GET(req: Request) {
       }
     })
 
-    // Ajouter les dates bloquées de la configuration
-    const blockedDates = (giteConfig.blockedDates as any[]) || []
+    // Ajouter les dates bloquées du gîte
+    const blockedDates = (gite.blockedDates as any[]) || []
     blockedDates.forEach((range: any) => {
       if (range.start && range.end) {
         const currentDate = new Date(range.start)
@@ -100,14 +111,19 @@ export async function GET(req: Request) {
       }
     })
 
+    // Récupérer la config globale pour la taxe
+    const giteConfig = await prisma.giteConfig.findFirst()
+
     return NextResponse.json({
       unavailableDates: [...new Set(unavailableDates)], // Retirer les doublons
-      giteConfig: {
-        pricePerNight: giteConfig.pricePerNight,
-        minimumStay: giteConfig.minimumStay,
-        maxGuests: giteConfig.maxGuests,
-        cleaningFee: giteConfig.cleaningFee,
-        taxRate: giteConfig.taxRate,
+      gite: {
+        id: gite.id,
+        name: gite.name,
+        pricePerNight: gite.pricePerNight,
+        minimumStay: gite.minimumStay,
+        maxGuests: gite.maxGuests,
+        cleaningFee: gite.cleaningFee,
+        taxRate: giteConfig?.taxRate || 0,
       },
     })
   } catch (error) {

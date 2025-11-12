@@ -6,6 +6,7 @@ export async function POST(req: Request) {
   try {
     const body = await req.json()
     const {
+      giteId,
       checkIn,
       checkOut,
       guests,
@@ -56,22 +57,38 @@ export async function POST(req: Request) {
       )
     }
 
-    // Récupérer la configuration du gîte
-    const giteConfig = await prisma.giteConfig.findFirst({
-      where: { id: "default" },
-    })
+    // Récupérer le gîte
+    let gite
+    if (giteId) {
+      gite = await prisma.gite.findUnique({
+        where: { id: giteId },
+      })
+    } else {
+      // Compatibilité : prendre le premier gîte disponible
+      gite = await prisma.gite.findFirst({
+        where: { available: true },
+        orderBy: { displayOrder: "asc" },
+      })
+    }
 
-    if (!giteConfig) {
+    if (!gite) {
       return NextResponse.json(
-        { error: "Gite configuration not found" },
+        { error: "Gite not found" },
         { status: 404 }
       )
     }
 
-    // Vérifier le nombre de personnes
-    if (guests > giteConfig.maxGuests) {
+    if (!gite.available) {
       return NextResponse.json(
-        { error: `Maximum ${giteConfig.maxGuests} guests allowed` },
+        { error: "This gite is not available for booking" },
+        { status: 400 }
+      )
+    }
+
+    // Vérifier le nombre de personnes
+    if (guests > gite.maxGuests) {
+      return NextResponse.json(
+        { error: `Maximum ${gite.maxGuests} guests allowed` },
         { status: 400 }
       )
     }
@@ -82,16 +99,17 @@ export async function POST(req: Request) {
     )
 
     // Vérifier le séjour minimum
-    if (nights < giteConfig.minimumStay) {
+    if (nights < gite.minimumStay) {
       return NextResponse.json(
-        { error: `Minimum stay is ${giteConfig.minimumStay} nights` },
+        { error: `Minimum stay is ${gite.minimumStay} nights` },
         { status: 400 }
       )
     }
 
-    // Vérifier les disponibilités (pas de réservation confirmée ou en attente qui chevauche)
+    // Vérifier les disponibilités pour CE gîte
     const overlappingReservations = await prisma.reservation.findMany({
       where: {
+        giteId: gite.id,
         status: {
           in: [ReservationStatus.CONFIRMED, ReservationStatus.PENDING],
         },
@@ -125,10 +143,14 @@ export async function POST(req: Request) {
       )
     }
 
+    // Récupérer la config globale pour la taxe
+    const giteConfig = await prisma.giteConfig.findFirst()
+    const taxRate = giteConfig?.taxRate || 0
+
     // Calculer le prix total
-    const subtotal = nights * giteConfig.pricePerNight
-    const cleaningFee = giteConfig.cleaningFee
-    const taxAmount = (subtotal + cleaningFee) * giteConfig.taxRate
+    const subtotal = nights * gite.pricePerNight
+    const cleaningFee = gite.cleaningFee
+    const taxAmount = (subtotal + cleaningFee) * taxRate
     const totalPrice = subtotal + cleaningFee + taxAmount
 
     // Créer ou récupérer le client
@@ -168,11 +190,13 @@ export async function POST(req: Request) {
     // Créer la réservation
     const reservation = await prisma.reservation.create({
       data: {
+        giteId: gite.id,
         checkIn: checkInDate,
         checkOut: checkOutDate,
         guests,
         nights,
-        pricePerNight: giteConfig.pricePerNight,
+        pricePerNight: gite.pricePerNight,
+        cleaningFee: gite.cleaningFee,
         totalPrice,
         status: ReservationStatus.PENDING,
         paymentStatus: PaymentStatus.PENDING,
@@ -181,6 +205,7 @@ export async function POST(req: Request) {
       },
       include: {
         customer: true,
+        gite: true,
       },
     })
 
@@ -195,6 +220,10 @@ export async function POST(req: Request) {
         totalPrice: reservation.totalPrice,
         status: reservation.status,
         paymentStatus: reservation.paymentStatus,
+        gite: {
+          id: gite.id,
+          name: gite.name,
+        },
       },
       pricing: {
         subtotal,
@@ -202,7 +231,7 @@ export async function POST(req: Request) {
         taxAmount,
         totalPrice,
         nights,
-        pricePerNight: giteConfig.pricePerNight,
+        pricePerNight: gite.pricePerNight,
       },
     })
   } catch (error) {
