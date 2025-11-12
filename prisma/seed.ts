@@ -60,8 +60,8 @@ async function main() {
       address: "Piscia Rossa",
       city: "Afa",
       postalCode: "20167",
-      latitude: 42.0000,
-      longitude: 8.7833,
+      latitude: 41.998500,
+      longitude: 8.781972,
       images: [],
       amenities: {
         wifi: true,
