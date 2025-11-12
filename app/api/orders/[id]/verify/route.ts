@@ -2,9 +2,14 @@ import { NextResponse } from "next/server"
 import { prisma } from "@/lib/db"
 import Stripe from "stripe"
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2025-10-29.clover",
-})
+function getStripe() {
+  if (!process.env.STRIPE_SECRET_KEY) {
+    throw new Error("STRIPE_SECRET_KEY is not defined")
+  }
+  return new Stripe(process.env.STRIPE_SECRET_KEY, {
+    apiVersion: "2025-10-29.clover",
+  })
+}
 
 export async function GET(
   req: Request,
@@ -23,6 +28,7 @@ export async function GET(
     }
 
     // Verify Stripe session
+    const stripe = getStripe()
     const session = await stripe.checkout.sessions.retrieve(sessionId)
 
     if (session.payment_status === "paid") {
