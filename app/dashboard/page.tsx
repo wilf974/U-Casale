@@ -161,21 +161,34 @@ export default function DashboardPage() {
 
   return (
     <div className="p-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-serif font-bold text-corsican-clay-900 mb-2">
-          Tableau de bord
-        </h1>
-        <p className="text-corsican-clay-700">
-          Aperçu général de votre activité
-        </p>
+      {/* Header with improved design */}
+      <div className="mb-8 pb-6 border-b-2 border-stone-200">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-4xl font-serif font-bold text-stone-900 mb-2 bg-gradient-to-r from-corsican-clay-900 to-corsican-maquis-700 bg-clip-text text-transparent">
+              Tableau de bord
+            </h1>
+            <p className="text-stone-600 text-lg">
+              Aperçu général de votre activité
+            </p>
+          </div>
+          <div className="text-right">
+            <p className="text-sm text-stone-500">Dernière mise à jour</p>
+            <p className="text-lg font-semibold text-stone-700">
+              {format(new Date(), "dd MMMM yyyy", { locale: fr })}
+            </p>
+          </div>
+        </div>
       </div>
 
       {/* Revenue Overview */}
       <div className="grid md:grid-cols-3 gap-6 mb-8">
-        <div className="bg-gradient-to-br from-corsican-clay-500 to-corsican-clay-700 rounded-xl p-6 text-white">
+        <div className="group bg-gradient-to-br from-corsican-clay-500 to-corsican-clay-700 rounded-xl p-6 text-white shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-sm font-medium opacity-90">Revenus totaux</h3>
-            <Euro className="h-6 w-6" />
+            <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center group-hover:bg-white/30 transition-colors">
+              <Euro className="h-6 w-6" />
+            </div>
           </div>
           <p className="text-4xl font-bold mb-2">{stats.revenue.total.toFixed(0)}€</p>
           <div className="flex items-center text-sm opacity-90">
@@ -184,19 +197,23 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        <div className="bg-gradient-to-br from-corsican-sea-500 to-corsican-sea-700 rounded-xl p-6 text-white">
+        <div className="group bg-gradient-to-br from-corsican-sea-500 to-corsican-sea-700 rounded-xl p-6 text-white shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-sm font-medium opacity-90">Revenus réservations</h3>
-            <Calendar className="h-6 w-6" />
+            <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center group-hover:bg-white/30 transition-colors">
+              <Calendar className="h-6 w-6" />
+            </div>
           </div>
           <p className="text-4xl font-bold mb-2">{stats.revenue.reservations.toFixed(0)}€</p>
           <p className="text-sm opacity-90">{stats.reservations.confirmed} confirmées</p>
         </div>
 
-        <div className="bg-gradient-to-br from-corsican-maquis-500 to-corsican-maquis-700 rounded-xl p-6 text-white">
+        <div className="group bg-gradient-to-br from-corsican-maquis-500 to-corsican-maquis-700 rounded-xl p-6 text-white shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-sm font-medium opacity-90">Revenus boutique</h3>
-            <ShoppingBag className="h-6 w-6" />
+            <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center group-hover:bg-white/30 transition-colors">
+              <ShoppingBag className="h-6 w-6" />
+            </div>
           </div>
           <p className="text-4xl font-bold mb-2">{stats.revenue.orders.toFixed(0)}€</p>
           <p className="text-sm opacity-90">{stats.orders.total} commandes</p>
@@ -204,128 +221,161 @@ export default function DashboardPage() {
       </div>
 
       {/* Key Metrics */}
-      <div className="bg-gradient-to-br from-stone-50 to-stone-100 rounded-xl p-6 mb-8 border-2 border-stone-200">
-        <h2 className="text-lg font-semibold text-stone-900 mb-4 flex items-center gap-2">
-          <TrendingUp className="h-5 w-5" />
+      <div className="bg-gradient-to-br from-stone-50 to-stone-100 rounded-xl p-6 mb-8 border-2 border-stone-200 shadow-md">
+        <h2 className="text-xl font-semibold text-stone-900 mb-4 flex items-center gap-2">
+          <div className="w-8 h-8 bg-gradient-to-br from-corsican-clay-500 to-corsican-maquis-600 rounded-lg flex items-center justify-center">
+            <TrendingUp className="h-5 w-5 text-white" />
+          </div>
           Métriques clés
         </h2>
-        <div className="grid md:grid-cols-4 gap-6">
-          <div className="bg-white rounded-lg p-4">
-            <p className="text-sm text-stone-600 mb-1">Panier moyen (Résa)</p>
-            <p className="text-2xl font-bold text-stone-900">{stats.metrics.avgReservationValue.toFixed(0)}€</p>
+        <div className="grid md:grid-cols-4 gap-4">
+          <div className="group bg-white rounded-lg p-5 shadow-sm hover:shadow-md transition-all duration-200 border border-stone-100">
+            <p className="text-xs font-medium text-stone-500 mb-2 uppercase tracking-wide">Panier moyen (Résa)</p>
+            <p className="text-3xl font-bold text-corsican-sea-700 mb-1">{stats.metrics.avgReservationValue.toFixed(0)}€</p>
+            <div className="h-1 w-16 bg-gradient-to-r from-corsican-sea-400 to-corsican-sea-600 rounded-full"></div>
           </div>
-          <div className="bg-white rounded-lg p-4">
-            <p className="text-sm text-stone-600 mb-1">Panier moyen (Boutique)</p>
-            <p className="text-2xl font-bold text-stone-900">{stats.metrics.avgOrderValue.toFixed(0)}€</p>
+          <div className="group bg-white rounded-lg p-5 shadow-sm hover:shadow-md transition-all duration-200 border border-stone-100">
+            <p className="text-xs font-medium text-stone-500 mb-2 uppercase tracking-wide">Panier moyen (Boutique)</p>
+            <p className="text-3xl font-bold text-corsican-maquis-700 mb-1">{stats.metrics.avgOrderValue.toFixed(0)}€</p>
+            <div className="h-1 w-16 bg-gradient-to-r from-corsican-maquis-400 to-corsican-maquis-600 rounded-full"></div>
           </div>
-          <div className="bg-white rounded-lg p-4">
-            <p className="text-sm text-stone-600 mb-1">Taux de fidélité</p>
-            <div className="flex items-baseline gap-2">
-              <p className="text-2xl font-bold text-stone-900">{stats.metrics.customerRetentionRate.toFixed(1)}%</p>
-              <p className="text-xs text-stone-500">({stats.metrics.repeatCustomers} clients)</p>
+          <div className="group bg-white rounded-lg p-5 shadow-sm hover:shadow-md transition-all duration-200 border border-stone-100">
+            <p className="text-xs font-medium text-stone-500 mb-2 uppercase tracking-wide">Taux de fidélité</p>
+            <div className="flex items-baseline gap-2 mb-1">
+              <p className="text-3xl font-bold text-purple-700">{stats.metrics.customerRetentionRate.toFixed(1)}%</p>
             </div>
+            <p className="text-xs text-stone-500">({stats.metrics.repeatCustomers} clients fidèles)</p>
           </div>
-          <div className="bg-white rounded-lg p-4">
-            <p className="text-sm text-stone-600 mb-1">Note moyenne</p>
-            <div className="flex items-center gap-2">
-              <p className="text-2xl font-bold text-stone-900">{stats.testimonials.avgRating.toFixed(1)}</p>
-              <div className="flex items-center">
-                <Star className="h-5 w-5 fill-yellow-400 text-yellow-400" />
-              </div>
+          <div className="group bg-white rounded-lg p-5 shadow-sm hover:shadow-md transition-all duration-200 border border-stone-100">
+            <p className="text-xs font-medium text-stone-500 mb-2 uppercase tracking-wide">Note moyenne</p>
+            <div className="flex items-center gap-2 mb-1">
+              <p className="text-3xl font-bold text-yellow-600">{stats.testimonials.avgRating.toFixed(1)}</p>
+              <Star className="h-6 w-6 fill-yellow-400 text-yellow-400" />
             </div>
+            <p className="text-xs text-stone-500">{stats.testimonials.published} avis publiés</p>
           </div>
         </div>
       </div>
 
       {/* Stats Grid */}
       <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <Link href="/dashboard/reservations" className="bg-white rounded-xl border-2 border-corsican-clay-200 p-6 hover:shadow-lg transition-all">
+        <Link href="/dashboard/reservations" className="group bg-white rounded-xl border-2 border-corsican-clay-200 p-6 hover:shadow-xl hover:border-corsican-clay-400 transition-all duration-300 transform hover:-translate-y-1">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-medium text-corsican-clay-600">Réservations</h3>
-            <Calendar className="h-6 w-6 text-corsican-clay-600" />
+            <h3 className="text-sm font-semibold text-corsican-clay-600 uppercase tracking-wide">Réservations</h3>
+            <div className="w-10 h-10 bg-corsican-sea-100 rounded-lg flex items-center justify-center group-hover:bg-corsican-sea-200 transition-colors">
+              <Calendar className="h-5 w-5 text-corsican-sea-700" />
+            </div>
           </div>
-          <p className="text-3xl font-bold text-corsican-clay-900 mb-2">{stats.reservations.total}</p>
+          <p className="text-4xl font-bold text-corsican-clay-900 mb-3">{stats.reservations.total}</p>
           <div className="flex items-center justify-between text-sm">
-            <span className="text-green-600">{stats.reservations.confirmed} confirmées</span>
-            <span className="text-yellow-600">{stats.reservations.pending} en attente</span>
+            <span className="flex items-center gap-1 text-green-600 font-medium">
+              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+              {stats.reservations.confirmed} confirmées
+            </span>
+            <span className="flex items-center gap-1 text-yellow-600 font-medium">
+              <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
+              {stats.reservations.pending} en attente
+            </span>
           </div>
         </Link>
 
-        <Link href="/dashboard/commandes" className="bg-white rounded-xl border-2 border-corsican-clay-200 p-6 hover:shadow-lg transition-all">
+        <Link href="/dashboard/commandes" className="group bg-white rounded-xl border-2 border-corsican-clay-200 p-6 hover:shadow-xl hover:border-corsican-clay-400 transition-all duration-300 transform hover:-translate-y-1">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-medium text-corsican-clay-600">Commandes</h3>
-            <ShoppingBag className="h-6 w-6 text-corsican-clay-600" />
+            <h3 className="text-sm font-semibold text-corsican-clay-600 uppercase tracking-wide">Commandes</h3>
+            <div className="w-10 h-10 bg-corsican-maquis-100 rounded-lg flex items-center justify-center group-hover:bg-corsican-maquis-200 transition-colors">
+              <ShoppingBag className="h-5 w-5 text-corsican-maquis-700" />
+            </div>
           </div>
-          <p className="text-3xl font-bold text-corsican-clay-900 mb-2">{stats.orders.total}</p>
+          <p className="text-4xl font-bold text-corsican-clay-900 mb-3">{stats.orders.total}</p>
           <div className="flex items-center justify-between text-sm">
-            <span className="text-blue-600">{stats.orders.processing} en cours</span>
-            <span className="text-purple-600">{stats.orders.shipped} expédiées</span>
+            <span className="flex items-center gap-1 text-blue-600 font-medium">
+              <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+              {stats.orders.processing} en cours
+            </span>
+            <span className="flex items-center gap-1 text-purple-600 font-medium">
+              <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+              {stats.orders.shipped} expédiées
+            </span>
           </div>
         </Link>
 
-        <Link href="/dashboard/produits" className="bg-white rounded-xl border-2 border-corsican-clay-200 p-6 hover:shadow-lg transition-all">
+        <Link href="/dashboard/produits" className="group bg-white rounded-xl border-2 border-corsican-clay-200 p-6 hover:shadow-xl hover:border-corsican-clay-400 transition-all duration-300 transform hover:-translate-y-1">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-medium text-corsican-clay-600">Produits</h3>
-            <Package className="h-6 w-6 text-corsican-clay-600" />
+            <h3 className="text-sm font-semibold text-corsican-clay-600 uppercase tracking-wide">Produits</h3>
+            <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center group-hover:bg-purple-200 transition-colors">
+              <Package className="h-5 w-5 text-purple-700" />
+            </div>
           </div>
-          <p className="text-3xl font-bold text-corsican-clay-900 mb-2">{stats.products.total}</p>
-          {stats.products.lowStock > 0 && (
-            <div className="flex items-center text-sm text-orange-600">
+          <p className="text-4xl font-bold text-corsican-clay-900 mb-3">{stats.products.total}</p>
+          {stats.products.lowStock > 0 ? (
+            <div className="flex items-center text-sm text-orange-600 font-medium">
               <AlertTriangle className="h-4 w-4 mr-1" />
               {stats.products.lowStock} stock faible
             </div>
+          ) : (
+            <p className="text-sm text-green-600 font-medium">Stock OK</p>
           )}
         </Link>
 
-        <Link href="/dashboard/clients" className="bg-white rounded-xl border-2 border-corsican-clay-200 p-6 hover:shadow-lg transition-all">
+        <Link href="/dashboard/clients" className="group bg-white rounded-xl border-2 border-corsican-clay-200 p-6 hover:shadow-xl hover:border-corsican-clay-400 transition-all duration-300 transform hover:-translate-y-1">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-medium text-corsican-clay-600">Clients</h3>
-            <Users className="h-6 w-6 text-corsican-clay-600" />
+            <h3 className="text-sm font-semibold text-corsican-clay-600 uppercase tracking-wide">Clients</h3>
+            <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center group-hover:bg-blue-200 transition-colors">
+              <Users className="h-5 w-5 text-blue-700" />
+            </div>
           </div>
-          <p className="text-3xl font-bold text-corsican-clay-900 mb-2">{stats.customers.total}</p>
-          <p className="text-sm text-corsican-clay-600">Clients enregistrés</p>
+          <p className="text-4xl font-bold text-corsican-clay-900 mb-3">{stats.customers.total}</p>
+          <p className="text-sm text-corsican-clay-600 font-medium">Clients enregistrés</p>
         </Link>
       </div>
 
       {/* Secondary Stats */}
-      <div className="grid md:grid-cols-4 gap-6 mb-8">
-        <Link href="/dashboard/categories" className="bg-white rounded-xl border-2 border-corsican-clay-200 p-4 hover:shadow-lg transition-all">
+      <div className="grid md:grid-cols-4 gap-4 mb-8">
+        <Link href="/dashboard/categories" className="group bg-white rounded-xl border border-stone-200 p-4 hover:shadow-lg hover:border-stone-300 transition-all duration-200">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-2xl font-bold text-corsican-clay-900">{stats.categories.total}</p>
-              <p className="text-sm text-corsican-clay-600">Catégories</p>
+              <p className="text-sm text-stone-600 font-medium">Catégories</p>
             </div>
-            <Package className="h-8 w-8 text-corsican-clay-400" />
+            <div className="w-10 h-10 bg-stone-100 rounded-lg flex items-center justify-center group-hover:bg-stone-200 transition-colors">
+              <Package className="h-5 w-5 text-stone-600" />
+            </div>
           </div>
         </Link>
 
-        <Link href="/dashboard/promotions" className="bg-white rounded-xl border-2 border-corsican-clay-200 p-4 hover:shadow-lg transition-all">
+        <Link href="/dashboard/promotions" className="group bg-white rounded-xl border border-stone-200 p-4 hover:shadow-lg hover:border-stone-300 transition-all duration-200">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-2xl font-bold text-corsican-clay-900">{stats.promoCodes.active}</p>
-              <p className="text-sm text-corsican-clay-600">Codes promo actifs</p>
+              <p className="text-sm text-stone-600 font-medium">Codes promo</p>
             </div>
-            <Ticket className="h-8 w-8 text-corsican-clay-400" />
+            <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center group-hover:bg-orange-200 transition-colors">
+              <Ticket className="h-5 w-5 text-orange-600" />
+            </div>
           </div>
         </Link>
 
-        <Link href="/dashboard/temoignages" className="bg-white rounded-xl border-2 border-corsican-clay-200 p-4 hover:shadow-lg transition-all">
+        <Link href="/dashboard/temoignages" className="group bg-white rounded-xl border border-stone-200 p-4 hover:shadow-lg hover:border-stone-300 transition-all duration-200">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-2xl font-bold text-corsican-clay-900">{stats.testimonials.published}</p>
-              <p className="text-sm text-corsican-clay-600">Avis publiés</p>
+              <p className="text-sm text-stone-600 font-medium">Avis publiés</p>
             </div>
-            <MessageSquare className="h-8 w-8 text-corsican-clay-400" />
+            <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center group-hover:bg-green-200 transition-colors">
+              <MessageSquare className="h-5 w-5 text-green-600" />
+            </div>
           </div>
         </Link>
 
-        <Link href="/dashboard/gite" className="bg-white rounded-xl border-2 border-corsican-clay-200 p-4 hover:shadow-lg transition-all">
+        <Link href="/dashboard/blog" className="group bg-white rounded-xl border border-stone-200 p-4 hover:shadow-lg hover:border-stone-300 transition-all duration-200">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-corsican-clay-900">Configuration</p>
-              <p className="text-xs text-corsican-clay-600">Gîte & paramètres</p>
+              <p className="text-sm font-semibold text-corsican-clay-900">Blog</p>
+              <p className="text-xs text-stone-600">Gestion articles</p>
             </div>
-            <div className="text-2xl">🏡</div>
+            <div className="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center group-hover:bg-indigo-200 transition-colors">
+              <div className="text-xl">📝</div>
+            </div>
           </div>
         </Link>
       </div>
@@ -334,16 +384,16 @@ export default function DashboardPage() {
       {chartData && (
         <div className="mb-8 space-y-6">
           {/* Revenue Chart */}
-          <div className="bg-white rounded-xl border-2 border-corsican-clay-200 p-6">
+          <div className="bg-white rounded-xl border border-stone-200 p-6 shadow-md">
             <div className="flex items-center space-x-3 mb-6">
-              <div className="w-10 h-10 bg-corsican-clay-100 rounded-lg flex items-center justify-center">
-                <BarChart3 className="h-5 w-5 text-corsican-clay-600" />
+              <div className="w-12 h-12 bg-gradient-to-br from-corsican-clay-500 to-corsican-clay-700 rounded-lg flex items-center justify-center shadow-md">
+                <BarChart3 className="h-6 w-6 text-white" />
               </div>
               <div>
-                <h2 className="text-xl font-serif font-bold text-corsican-clay-900">
-                  Évolution des revenus (6 derniers mois)
+                <h2 className="text-xl font-semibold text-stone-900">
+                  Évolution des revenus
                 </h2>
-                <p className="text-sm text-corsican-clay-600">Revenus par source</p>
+                <p className="text-sm text-stone-600">6 derniers mois - Revenus par source</p>
               </div>
             </div>
             <ResponsiveContainer width="100%" height={300}>
@@ -398,16 +448,16 @@ export default function DashboardPage() {
 
           <div className="grid md:grid-cols-2 gap-6">
             {/* Activity Bar Chart */}
-            <div className="bg-white rounded-xl border-2 border-corsican-clay-200 p-6">
+            <div className="bg-white rounded-xl border border-stone-200 p-6 shadow-md">
               <div className="flex items-center space-x-3 mb-6">
-                <div className="w-10 h-10 bg-corsican-sea-100 rounded-lg flex items-center justify-center">
-                  <BarChart3 className="h-5 w-5 text-corsican-sea-600" />
+                <div className="w-12 h-12 bg-gradient-to-br from-corsican-sea-500 to-corsican-sea-700 rounded-lg flex items-center justify-center shadow-md">
+                  <BarChart3 className="h-6 w-6 text-white" />
                 </div>
                 <div>
-                  <h2 className="text-xl font-serif font-bold text-corsican-clay-900">
+                  <h2 className="text-xl font-semibold text-stone-900">
                     Activité mensuelle
                   </h2>
-                  <p className="text-sm text-corsican-clay-600">Nombre de transactions</p>
+                  <p className="text-sm text-stone-600">Nombre de transactions</p>
                 </div>
               </div>
               <ResponsiveContainer width="100%" height={300}>
@@ -448,16 +498,16 @@ export default function DashboardPage() {
 
             {/* Category Pie Chart */}
             {chartData.categoryData.length > 0 && (
-              <div className="bg-white rounded-xl border-2 border-corsican-clay-200 p-6">
+              <div className="bg-white rounded-xl border border-stone-200 p-6 shadow-md">
                 <div className="flex items-center space-x-3 mb-6">
-                  <div className="w-10 h-10 bg-corsican-maquis-100 rounded-lg flex items-center justify-center">
-                    <PieChartIcon className="h-5 w-5 text-corsican-maquis-600" />
+                  <div className="w-12 h-12 bg-gradient-to-br from-corsican-maquis-500 to-corsican-maquis-700 rounded-lg flex items-center justify-center shadow-md">
+                    <PieChartIcon className="h-6 w-6 text-white" />
                   </div>
                   <div>
-                    <h2 className="text-xl font-serif font-bold text-corsican-clay-900">
+                    <h2 className="text-xl font-semibold text-stone-900">
                       Ventes par catégorie
                     </h2>
-                    <p className="text-sm text-corsican-clay-600">Répartition du CA boutique</p>
+                    <p className="text-sm text-stone-600">Répartition du CA boutique</p>
                   </div>
                 </div>
                 <ResponsiveContainer width="100%" height={300}>
@@ -505,10 +555,15 @@ export default function DashboardPage() {
       {/* Recent Activity */}
       <div className="grid md:grid-cols-3 gap-6">
         {/* Recent Reservations */}
-        <div className="bg-white rounded-xl border-2 border-corsican-clay-200 p-6">
-          <h2 className="text-lg font-semibold text-corsican-clay-900 mb-4">
-            Réservations récentes
-          </h2>
+        <div className="bg-white rounded-xl border border-stone-200 p-6 shadow-md">
+          <div className="flex items-center gap-2 mb-4 pb-3 border-b border-stone-200">
+            <div className="w-8 h-8 bg-gradient-to-br from-corsican-sea-500 to-corsican-sea-700 rounded-lg flex items-center justify-center">
+              <Calendar className="h-4 w-4 text-white" />
+            </div>
+            <h2 className="text-lg font-semibold text-stone-900">
+              Réservations récentes
+            </h2>
+          </div>
           {stats.recentActivity.reservations.length === 0 ? (
             <p className="text-sm text-corsican-clay-600 text-center py-4">Aucune réservation</p>
           ) : (
@@ -536,10 +591,15 @@ export default function DashboardPage() {
         </div>
 
         {/* Recent Orders */}
-        <div className="bg-white rounded-xl border-2 border-corsican-clay-200 p-6">
-          <h2 className="text-lg font-semibold text-corsican-clay-900 mb-4">
-            Commandes récentes
-          </h2>
+        <div className="bg-white rounded-xl border border-stone-200 p-6 shadow-md">
+          <div className="flex items-center gap-2 mb-4 pb-3 border-b border-stone-200">
+            <div className="w-8 h-8 bg-gradient-to-br from-corsican-maquis-500 to-corsican-maquis-700 rounded-lg flex items-center justify-center">
+              <ShoppingBag className="h-4 w-4 text-white" />
+            </div>
+            <h2 className="text-lg font-semibold text-stone-900">
+              Commandes récentes
+            </h2>
+          </div>
           {stats.recentActivity.orders.length === 0 ? (
             <p className="text-sm text-corsican-clay-600 text-center py-4">Aucune commande</p>
           ) : (
@@ -565,10 +625,15 @@ export default function DashboardPage() {
         </div>
 
         {/* Recent Testimonials */}
-        <div className="bg-white rounded-xl border-2 border-corsican-clay-200 p-6">
-          <h2 className="text-lg font-semibold text-corsican-clay-900 mb-4">
-            Avis récents
-          </h2>
+        <div className="bg-white rounded-xl border border-stone-200 p-6 shadow-md">
+          <div className="flex items-center gap-2 mb-4 pb-3 border-b border-stone-200">
+            <div className="w-8 h-8 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-lg flex items-center justify-center">
+              <MessageSquare className="h-4 w-4 text-white" />
+            </div>
+            <h2 className="text-lg font-semibold text-stone-900">
+              Avis récents
+            </h2>
+          </div>
           {stats.recentActivity.testimonials.length === 0 ? (
             <p className="text-sm text-corsican-clay-600 text-center py-4">Aucun avis</p>
           ) : (
