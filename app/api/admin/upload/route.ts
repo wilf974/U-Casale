@@ -2,8 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { writeFile, mkdir } from "fs/promises"
 import { existsSync } from "fs"
 import path from "path"
-import { getServerSession } from "next-auth"
-import { authOptions } from "@/lib/auth"
+import { auth } from "@/lib/auth"
 
 // Configuration
 const UPLOAD_DIR = path.join(process.cwd(), "public/uploads")
@@ -13,7 +12,7 @@ const ALLOWED_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp", "im
 export async function POST(request: NextRequest) {
   try {
     // Vérifier l'authentification
-    const session = await getServerSession(authOptions)
+    const session = await auth()
     if (!session) {
       return NextResponse.json(
         { error: "Non autorisé" },
@@ -87,7 +86,7 @@ export async function POST(request: NextRequest) {
 export async function DELETE(request: NextRequest) {
   try {
     // Vérifier l'authentification
-    const session = await getServerSession(authOptions)
+    const session = await auth()
     if (!session) {
       return NextResponse.json(
         { error: "Non autorisé" },
