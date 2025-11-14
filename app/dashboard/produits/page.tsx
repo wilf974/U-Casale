@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import { Plus, Edit, Trash2, Search, Loader2, Package, Eye, EyeOff, Image as ImageIcon, X, Download, ChevronUp, ChevronDown, CheckSquare, Square, Trash, Check } from "lucide-react"
 import Link from "next/link"
+import MultiImageUpload from "@/components/admin/MultiImageUpload"
 
 interface Category {
   id: string
@@ -37,7 +38,6 @@ export default function ProductsPage() {
   const [filterStock, setFilterStock] = useState<string>("all")
   const [filterPriceMin, setFilterPriceMin] = useState<string>("")
   const [filterPriceMax, setFilterPriceMax] = useState<string>("")
-  const [newImageUrl, setNewImageUrl] = useState("")
 
   // Bulk actions
   const [selectedProducts, setSelectedProducts] = useState<string[]>([])
@@ -131,7 +131,6 @@ export default function ProductsPage() {
       })
     }
     setError("")
-    setNewImageUrl("")
     setShowModal(true)
   }
 
@@ -139,7 +138,6 @@ export default function ProductsPage() {
     setShowModal(false)
     setEditingProduct(null)
     setError("")
-    setNewImageUrl("")
   }
 
   const generateSlug = (name: string) => {
@@ -156,23 +154,6 @@ export default function ProductsPage() {
       ...formData,
       name,
       slug: editingProduct ? formData.slug : generateSlug(name),
-    })
-  }
-
-  const handleAddImage = () => {
-    if (newImageUrl.trim()) {
-      setFormData({
-        ...formData,
-        images: [...formData.images, newImageUrl.trim()],
-      })
-      setNewImageUrl("")
-    }
-  }
-
-  const handleRemoveImage = (index: number) => {
-    setFormData({
-      ...formData,
-      images: formData.images.filter((_, i) => i !== index),
     })
   }
 
@@ -936,45 +917,13 @@ export default function ProductsPage() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-corsican-clay-700 mb-2">
-                      Images
-                    </label>
-                    <div className="space-y-2 mb-2">
-                      {formData.images.map((image, index) => (
-                        <div key={index} className="flex items-center space-x-2">
-                          <img src={image} alt="" className="w-16 h-16 object-cover rounded" />
-                          <input
-                            type="text"
-                            value={image}
-                            readOnly
-                            className="flex-1 px-3 py-2 rounded border border-corsican-clay-200 bg-gray-50 text-sm"
-                          />
-                          <button
-                            type="button"
-                            onClick={() => handleRemoveImage(index)}
-                            className="p-2 rounded bg-red-100 text-red-700 hover:bg-red-200"
-                          >
-                            <X className="h-4 w-4" />
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                    <div className="flex space-x-2">
-                      <input
-                        type="url"
-                        value={newImageUrl}
-                        onChange={(e) => setNewImageUrl(e.target.value)}
-                        placeholder="URL de l'image"
-                        className="flex-1 px-4 py-2 rounded-lg border border-corsican-clay-300 focus:ring-2 focus:ring-corsican-clay-500 focus:border-transparent transition"
-                      />
-                      <button
-                        type="button"
-                        onClick={handleAddImage}
-                        className="px-4 py-2 rounded-lg bg-corsican-maquis-600 text-white hover:bg-corsican-maquis-700 transition-colors"
-                      >
-                        <Plus className="h-5 w-5" />
-                      </button>
-                    </div>
+                    <MultiImageUpload
+                      values={formData.images}
+                      onChange={(images) => setFormData({ ...formData, images })}
+                      folder="products"
+                      label="Images du produit"
+                      maxImages={10}
+                    />
                   </div>
 
                   <div>

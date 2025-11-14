@@ -4,6 +4,8 @@ import { useState, useEffect } from "react"
 import { useRouter, useParams } from "next/navigation"
 import { ArrowLeft, Save, Loader2, Plus, X } from "lucide-react"
 import Link from "next/link"
+import ImageUpload from "@/components/admin/ImageUpload"
+import MultiImageUpload from "@/components/admin/MultiImageUpload"
 
 const AMENITIES_OPTIONS = [
   { id: "wifi", label: "WiFi" },
@@ -60,7 +62,6 @@ export default function EditGitePage() {
   })
 
   const [images, setImages] = useState<string[]>([])
-  const [newImage, setNewImage] = useState("")
   const [amenities, setAmenities] = useState<{ [key: string]: boolean }>({})
 
   // Load gite data
@@ -129,17 +130,6 @@ export default function EditGitePage() {
       ...prev,
       [amenityId]: !prev[amenityId],
     }))
-  }
-
-  const handleAddImage = () => {
-    if (newImage.trim()) {
-      setImages([...images, newImage.trim()])
-      setNewImage("")
-    }
-  }
-
-  const handleRemoveImage = (index: number) => {
-    setImages(images.filter((_, i) => i !== index))
   }
 
   const handleSubmit = async () => {
@@ -540,65 +530,22 @@ export default function EditGitePage() {
           <div className="bg-white rounded-xl p-6 border border-stone-200">
             <h3 className="text-sm font-semibold text-stone-900 mb-4">Images</h3>
 
-            <div className="space-y-3">
-              <div>
-                <label className="block text-sm font-medium text-stone-700 mb-2">
-                  Image principale
-                </label>
-                <input
-                  type="url"
-                  name="featuredImage"
-                  value={formData.featuredImage}
-                  onChange={handleInputChange}
-                  placeholder="https://..."
-                  className="w-full px-3 py-2 rounded-lg border border-stone-300 focus:outline-none focus:ring-2 focus:ring-corsican-maquis-500 text-sm"
-                />
-                {formData.featuredImage && (
-                  <div className="mt-2">
-                    <img
-                      src={formData.featuredImage}
-                      alt="Preview"
-                      className="w-full h-32 object-cover rounded-lg"
-                    />
-                  </div>
-                )}
-              </div>
+            <div className="space-y-6">
+              <ImageUpload
+                value={formData.featuredImage}
+                onChange={(url) => setFormData({ ...formData, featuredImage: url })}
+                folder="gites"
+                label="Image principale"
+              />
 
-              <div>
-                <label className="block text-sm font-medium text-stone-700 mb-2">
-                  Galerie ({images.length})
-                </label>
-                <div className="flex gap-2 mb-2">
-                  <input
-                    type="url"
-                    value={newImage}
-                    onChange={(e) => setNewImage(e.target.value)}
-                    placeholder="URL image..."
-                    className="flex-1 px-3 py-2 rounded-lg border border-stone-300 focus:outline-none focus:ring-2 focus:ring-corsican-maquis-500 text-sm"
-                  />
-                  <button
-                    type="button"
-                    onClick={handleAddImage}
-                    className="p-2 bg-corsican-maquis-600 text-white rounded-lg hover:bg-corsican-maquis-700"
-                  >
-                    <Plus className="h-5 w-5" />
-                  </button>
-                </div>
-                <div className="space-y-2 max-h-64 overflow-y-auto">
-                  {images.map((img, index) => (
-                    <div key={index} className="flex items-center gap-2 p-2 bg-stone-50 rounded-lg">
-                      <img src={img} alt={`Image ${index + 1}`} className="w-12 h-12 object-cover rounded" />
-                      <span className="flex-1 text-xs text-stone-600 truncate">{img}</span>
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveImage(index)}
-                        className="p-1 text-red-600 hover:bg-red-50 rounded"
-                      >
-                        <X className="h-4 w-4" />
-                      </button>
-                    </div>
-                  ))}
-                </div>
+              <div className="border-t border-stone-200 pt-6">
+                <MultiImageUpload
+                  values={images}
+                  onChange={setImages}
+                  folder="gites"
+                  label="Galerie d'images"
+                  maxImages={20}
+                />
               </div>
 
               <div>
