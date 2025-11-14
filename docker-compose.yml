@@ -41,6 +41,8 @@ services:
       EMAIL_SERVER_PASSWORD: ${EMAIL_SERVER_PASSWORD}
       EMAIL_FROM: ${EMAIL_FROM}
       NEXT_PUBLIC_SITE_URL: https://ucasale.woutils.com
+    volumes:
+      - uploads_data:/app/public/uploads
     depends_on:
       postgres:
         condition: service_healthy
@@ -87,4 +89,6 @@ volumes:
   postgres_data:
     driver: local
   nginx_cache:
+    driver: local
+  uploads_data:
     driver: local
