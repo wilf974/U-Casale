@@ -31,6 +31,9 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 
+# Install su-exec for user switching
+RUN apk add --no-cache su-exec
+
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
@@ -45,20 +48,19 @@ COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
 RUN mkdir .next
 RUN chown nextjs:nodejs .next
 
-# Create uploads directory with correct permissions
-RUN mkdir -p public/uploads/gites public/uploads/products public/uploads/general
-RUN chown -R nextjs:nodejs public/uploads
-
 # Automatically leverage output traces to reduce image size
 # https://nextjs.org/docs/advanced-features/output-file-tracing
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
-USER nextjs
+# Copy entrypoint script
+COPY docker-entrypoint.sh /docker-entrypoint.sh
+RUN chmod +x /docker-entrypoint.sh
 
 EXPOSE 3000
 
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
-CMD ["node", "server.js"]
+# Run as root initially to create directories, then switch to nextjs user
+ENTRYPOINT ["/docker-entrypoint.sh"]

@@ -65,8 +65,15 @@ export async function POST(request: NextRequest) {
     const filepath = path.join(folderPath, filename)
     await writeFile(filepath, buffer)
 
+    console.log(`✅ Fichier uploadé avec succès:`)
+    console.log(`   - Chemin: ${filepath}`)
+    console.log(`   - Taille: ${buffer.length} bytes`)
+    console.log(`   - Dossier: ${folder}`)
+
     // Retourner l'URL publique
     const publicUrl = `/uploads/${folder}/${filename}`
+
+    console.log(`   - URL publique: ${publicUrl}`)
 
     return NextResponse.json({
       success: true,
