@@ -1,10 +1,11 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Calendar, Users, Euro, Mail, Phone, CheckCircle, Clock, XCircle, Trash2, Eye, Download } from "lucide-react"
+import { Calendar, Users, Euro, Mail, Phone, CheckCircle, Clock, XCircle, Trash2, Eye, Download, Edit, AlertTriangle } from "lucide-react"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 
 interface Reservation {
   id: string
@@ -25,9 +26,11 @@ interface Reservation {
 }
 
 export default function ReservationsPage() {
+  const router = useRouter()
   const [reservations, setReservations] = useState<Reservation[]>([])
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState<string>("all")
+  const [deletingId, setDeletingId] = useState<string | null>(null)
 
   useEffect(() => {
     fetchReservations()
@@ -106,6 +109,31 @@ export default function ReservationsPage() {
         {labels[paymentStatus as keyof typeof labels] || paymentStatus}
       </span>
     )
+  }
+
+  const handleDelete = async (id: string, customerName: string) => {
+    if (!confirm(`Êtes-vous sûr de vouloir supprimer la réservation de ${customerName} ?\n\nCette action est irréversible.`)) {
+      return
+    }
+
+    try {
+      setDeletingId(id)
+      const response = await fetch(`/api/admin/reservations/${id}`, {
+        method: "DELETE",
+      })
+
+      if (response.ok) {
+        // Recharger la liste des réservations
+        fetchReservations()
+      } else {
+        alert("Erreur lors de la suppression de la réservation")
+      }
+    } catch (error) {
+      console.error("Error deleting reservation:", error)
+      alert("Erreur lors de la suppression de la réservation")
+    } finally {
+      setDeletingId(null)
+    }
   }
 
   const stats = {
@@ -327,13 +355,31 @@ export default function ReservationsPage() {
                       {getPaymentBadge(reservation.paymentStatus)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <Link
-                        href={`/dashboard/reservations/${reservation.id}`}
-                        className="inline-flex items-center px-3 py-2 rounded-lg bg-corsican-clay-100 text-corsican-clay-700 hover:bg-corsican-clay-200 transition-colors text-sm font-medium"
-                      >
-                        <Eye className="h-4 w-4 mr-1" />
-                        Voir
-                      </Link>
+                      <div className="flex items-center gap-2">
+                        <Link
+                          href={`/dashboard/reservations/${reservation.id}`}
+                          className="inline-flex items-center px-3 py-2 rounded-lg bg-corsican-clay-100 text-corsican-clay-700 hover:bg-corsican-clay-200 transition-colors text-sm font-medium"
+                          title="Voir les détails"
+                        >
+                          <Eye className="h-4 w-4 mr-1" />
+                          Voir
+                        </Link>
+                        <Link
+                          href={`/dashboard/reservations/${reservation.id}`}
+                          className="inline-flex items-center px-3 py-2 rounded-lg bg-blue-100 text-blue-700 hover:bg-blue-200 transition-colors text-sm font-medium"
+                          title="Modifier"
+                        >
+                          <Edit className="h-4 w-4" />
+                        </Link>
+                        <button
+                          onClick={() => handleDelete(reservation.id, `${reservation.customer.firstName} ${reservation.customer.lastName}`)}
+                          disabled={deletingId === reservation.id}
+                          className="inline-flex items-center px-3 py-2 rounded-lg bg-red-100 text-red-700 hover:bg-red-200 transition-colors text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                          title="Supprimer"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}

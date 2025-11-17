@@ -109,7 +109,18 @@ export default function ReservationDetailPage({ params }: { params: { id: string
   }
 
   const handleDelete = async () => {
-    if (!confirm("Êtes-vous sûr de vouloir supprimer cette réservation ?")) {
+    if (!reservation) return
+
+    const confirmMessage = `⚠️ ATTENTION : Suppression définitive\n\n` +
+      `Vous êtes sur le point de supprimer la réservation de :\n` +
+      `${reservation.customer.firstName} ${reservation.customer.lastName}\n\n` +
+      `📅 Du ${format(new Date(reservation.checkIn), "dd/MM/yyyy", { locale: fr })} ` +
+      `au ${format(new Date(reservation.checkOut), "dd/MM/yyyy", { locale: fr })}\n` +
+      `💰 Total : ${reservation.totalPrice.toFixed(2)}€\n\n` +
+      `⚠️ Cette action est IRRÉVERSIBLE !\n\n` +
+      `Êtes-vous absolument certain de vouloir continuer ?`
+
+    if (!confirm(confirmMessage)) {
       return
     }
 
