@@ -1,7 +1,6 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import DashboardLayout from "@/components/layout/DashboardLayout"
 import { Save, Loader2, Plus, X } from "lucide-react"
 
 export default function EditHomePagePage() {
@@ -124,17 +123,14 @@ export default function EditHomePagePage() {
 
   if (loading) {
     return (
-      <DashboardLayout>
-        <div className="flex items-center justify-center min-h-[400px]">
-          <Loader2 className="h-8 w-8 animate-spin text-corsican-clay-600" />
-        </div>
-      </DashboardLayout>
+      <div className="flex items-center justify-center min-h-[400px]">
+        <Loader2 className="h-8 w-8 animate-spin text-corsican-clay-600" />
+      </div>
     )
   }
 
   return (
-    <DashboardLayout>
-      <div className="max-w-4xl mx-auto">
+    <div className="max-w-4xl mx-auto">
         <div className="mb-8">
           <h1 className="text-3xl font-serif font-bold text-corsican-clay-900 mb-2">
             Modifier la page d'accueil
@@ -418,6 +414,5 @@ export default function EditHomePagePage() {
           </div>
         </form>
       </div>
-    </DashboardLayout>
   )
 }
