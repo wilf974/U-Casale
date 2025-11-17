@@ -16,14 +16,19 @@ export default function EditHomePagePage() {
     giteTitle: "",
     giteDescription: "",
     giteFeatures: [] as string[],
+    giteImage: "",
     boutiqueTitle: "",
     boutiqueDescription: "",
     boutiqueFeatures: [] as string[],
+    boutiqueImage: "",
     locationTitle: "",
     locationDescription: "",
     ctaTitle: "",
     ctaDescription: "",
   })
+
+  const [uploadingGiteImage, setUploadingGiteImage] = useState(false)
+  const [uploadingBoutiqueImage, setUploadingBoutiqueImage] = useState(false)
 
   useEffect(() => {
     fetchContent()
@@ -44,11 +49,13 @@ export default function EditHomePagePage() {
           giteFeatures: Array.isArray(data.content.giteFeatures)
             ? data.content.giteFeatures
             : [],
+          giteImage: data.content.giteImage || "",
           boutiqueTitle: data.content.boutiqueTitle || "",
           boutiqueDescription: data.content.boutiqueDescription || "",
           boutiqueFeatures: Array.isArray(data.content.boutiqueFeatures)
             ? data.content.boutiqueFeatures
             : [],
+          boutiqueImage: data.content.boutiqueImage || "",
           locationTitle: data.content.locationTitle || "",
           locationDescription: data.content.locationDescription || "",
           ctaTitle: data.content.ctaTitle || "",
@@ -119,6 +126,44 @@ export default function EditHomePagePage() {
       ...formData,
       [section]: newFeatures,
     })
+  }
+
+  const handleImageUpload = async (
+    e: React.ChangeEvent<HTMLInputElement>,
+    section: "giteImage" | "boutiqueImage"
+  ) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    const setUploading = section === "giteImage" ? setUploadingGiteImage : setUploadingBoutiqueImage
+
+    try {
+      setUploading(true)
+      const formData = new FormData()
+      formData.append("file", file)
+      formData.append("folder", "general")
+
+      const response = await fetch("/api/admin/upload", {
+        method: "POST",
+        body: formData,
+      })
+
+      const data = await response.json()
+
+      if (data.success && data.url) {
+        setFormData((prev) => ({
+          ...prev,
+          [section]: data.url,
+        }))
+      } else {
+        setError(data.error || "Erreur lors de l'upload")
+      }
+    } catch (error) {
+      console.error("Error uploading image:", error)
+      setError("Erreur lors de l'upload de l'image")
+    } finally {
+      setUploading(false)
+    }
   }
 
   if (loading) {
@@ -259,6 +304,33 @@ export default function EditHomePagePage() {
                   Ajouter une caractéristique
                 </button>
               </div>
+              <div>
+                <label className="block text-sm font-medium text-corsican-clay-700 mb-2">
+                  Image du gîte
+                </label>
+                {formData.giteImage && (
+                  <div className="mb-3">
+                    <img
+                      src={formData.giteImage}
+                      alt="Aperçu gîte"
+                      className="w-full h-48 object-cover rounded-lg"
+                    />
+                  </div>
+                )}
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => handleImageUpload(e, "giteImage")}
+                  disabled={uploadingGiteImage}
+                  className="block w-full text-sm text-corsican-clay-700 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-corsican-clay-50 file:text-corsican-clay-700 hover:file:bg-corsican-clay-100 disabled:opacity-50"
+                />
+                {uploadingGiteImage && (
+                  <p className="text-sm text-corsican-clay-600 mt-2 flex items-center">
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Upload en cours...
+                  </p>
+                )}
+              </div>
             </div>
           </div>
 
@@ -322,6 +394,33 @@ export default function EditHomePagePage() {
                   <Plus className="h-4 w-4 mr-2" />
                   Ajouter une caractéristique
                 </button>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-corsican-clay-700 mb-2">
+                  Image de la boutique
+                </label>
+                {formData.boutiqueImage && (
+                  <div className="mb-3">
+                    <img
+                      src={formData.boutiqueImage}
+                      alt="Aperçu boutique"
+                      className="w-full h-48 object-cover rounded-lg"
+                    />
+                  </div>
+                )}
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => handleImageUpload(e, "boutiqueImage")}
+                  disabled={uploadingBoutiqueImage}
+                  className="block w-full text-sm text-corsican-clay-700 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-corsican-clay-50 file:text-corsican-clay-700 hover:file:bg-corsican-clay-100 disabled:opacity-50"
+                />
+                {uploadingBoutiqueImage && (
+                  <p className="text-sm text-corsican-clay-600 mt-2 flex items-center">
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Upload en cours...
+                  </p>
+                )}
               </div>
             </div>
           </div>

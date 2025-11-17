@@ -13,9 +13,11 @@ interface HomePageContent {
   giteTitle: string
   giteDescription: string
   giteFeatures: string[]
+  giteImage?: string
   boutiqueTitle: string
   boutiqueDescription: string
   boutiqueFeatures: string[]
+  boutiqueImage?: string
   locationTitle: string
   locationDescription: string
   ctaTitle: string
@@ -40,9 +42,11 @@ export default function HomePage() {
             giteTitle: data.content.giteTitle || "",
             giteDescription: data.content.giteDescription || "",
             giteFeatures: Array.isArray(data.content.giteFeatures) ? data.content.giteFeatures : [],
+            giteImage: data.content.giteImage || undefined,
             boutiqueTitle: data.content.boutiqueTitle || "",
             boutiqueDescription: data.content.boutiqueDescription || "",
             boutiqueFeatures: Array.isArray(data.content.boutiqueFeatures) ? data.content.boutiqueFeatures : [],
+            boutiqueImage: data.content.boutiqueImage || undefined,
             locationTitle: data.content.locationTitle || "",
             locationDescription: data.content.locationDescription || "",
             ctaTitle: data.content.ctaTitle || "",
@@ -157,11 +161,18 @@ export default function HomePage() {
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
             </div>
-            <div className="relative h-96 rounded-2xl bg-gradient-to-br from-corsican-clay-200 to-corsican-maquis-200 shadow-xl">
-              <div className="absolute inset-0 flex items-center justify-center text-corsican-clay-400">
-                <Home className="h-24 w-24" />
-              </div>
-              {/* Placeholder - À remplacer par une vraie image */}
+            <div className="relative h-96 rounded-2xl overflow-hidden shadow-xl">
+              {content?.giteImage ? (
+                <img
+                  src={content.giteImage}
+                  alt="Le Gîte"
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="w-full h-full bg-gradient-to-br from-corsican-clay-200 to-corsican-maquis-200 flex items-center justify-center">
+                  <Home className="h-24 w-24 text-corsican-clay-400" />
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -171,11 +182,18 @@ export default function HomePage() {
       <section className="py-20 bg-corsican-sand-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-2 gap-12 items-center">
-            <div className="order-2 md:order-1 relative h-96 rounded-2xl bg-gradient-to-br from-corsican-maquis-200 to-corsican-sand-200 shadow-xl">
-              <div className="absolute inset-0 flex items-center justify-center text-corsican-maquis-400">
-                <ShoppingBag className="h-24 w-24" />
-              </div>
-              {/* Placeholder - À remplacer par une vraie image */}
+            <div className="order-2 md:order-1 relative h-96 rounded-2xl overflow-hidden shadow-xl">
+              {content?.boutiqueImage ? (
+                <img
+                  src={content.boutiqueImage}
+                  alt="La Boutique"
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="w-full h-full bg-gradient-to-br from-corsican-maquis-200 to-corsican-sand-200 flex items-center justify-center">
+                  <ShoppingBag className="h-24 w-24 text-corsican-maquis-400" />
+                </div>
+              )}
             </div>
             <div className="order-1 md:order-2">
               <div className="inline-flex items-center space-x-2 text-corsican-maquis-600 mb-4">

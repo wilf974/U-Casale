@@ -53,9 +53,11 @@ export async function PATCH(req: Request) {
       giteTitle,
       giteDescription,
       giteFeatures,
+      giteImage,
       boutiqueTitle,
       boutiqueDescription,
       boutiqueFeatures,
+      boutiqueImage,
       locationTitle,
       locationDescription,
       ctaTitle,
@@ -79,9 +81,11 @@ export async function PATCH(req: Request) {
     if (giteTitle !== undefined) updateData.giteTitle = giteTitle.trim()
     if (giteDescription !== undefined) updateData.giteDescription = giteDescription.trim()
     if (giteFeatures !== undefined) updateData.giteFeatures = giteFeatures
+    if (giteImage !== undefined) updateData.giteImage = giteImage
     if (boutiqueTitle !== undefined) updateData.boutiqueTitle = boutiqueTitle.trim()
     if (boutiqueDescription !== undefined) updateData.boutiqueDescription = boutiqueDescription.trim()
     if (boutiqueFeatures !== undefined) updateData.boutiqueFeatures = boutiqueFeatures
+    if (boutiqueImage !== undefined) updateData.boutiqueImage = boutiqueImage
     if (locationTitle !== undefined) updateData.locationTitle = locationTitle.trim()
     if (locationDescription !== undefined) updateData.locationDescription = locationDescription.trim()
     if (ctaTitle !== undefined) updateData.ctaTitle = ctaTitle.trim()

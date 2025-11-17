@@ -349,11 +349,13 @@ model HomePageContent {
   giteTitle       String   @default("Un havre de paix au cœur de la Corse")
   giteDescription String   @default("Notre gîte authentique vous accueille à Piscia Rossa pour un séjour inoubliable. Profitez du calme de la nature corse dans un cadre chaleureux et convivial.")
   giteFeatures    Json     @default("[\"Capacité jusqu'à 6 personnes\",\"Équipements modernes dans un cadre traditionnel\",\"Vue panoramique sur le maquis\"]")
+  giteImage       String?
 
   // Section Boutique
   boutiqueTitle       String @default("Produits artisanaux corses")
   boutiqueDescription String @default("Seni Production vous propose une sélection de produits locaux authentiques. Vins corses, huiles d'olive, confitures maison et bien plus encore.")
   boutiqueFeatures    Json   @default("[\"Production locale et artisanale\",\"Livraison possible dans toute la France\",\"Respect des traditions corses\"]")
+  boutiqueImage       String?
 
   // Section Localisation
   locationTitle       String @default("Piscia Rossa, Corse")
