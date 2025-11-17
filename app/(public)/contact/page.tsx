@@ -1,9 +1,19 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import PublicLayout from "@/components/layout/PublicLayout"
 import DynamicMap from "@/components/map/DynamicMap"
-import { MapPin, Phone, Mail, Send, MessageSquare } from "lucide-react"
+import { MapPin, Phone, Mail, Send, MessageSquare, Loader2 } from "lucide-react"
+
+interface SiteSettings {
+  siteName: string
+  siteDescription: string | null
+  address: string | null
+  contactEmail: string | null
+  contactPhone: string | null
+  facebookUrl: string | null
+  instagramUrl: string | null
+}
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -13,9 +23,29 @@ export default function ContactPage() {
     subject: "",
     message: "",
   })
+  const [settings, setSettings] = useState<SiteSettings | null>(null)
+  const [loadingSettings, setLoadingSettings] = useState(true)
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
   const [error, setError] = useState("")
+
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const response = await fetch("/api/settings")
+        const data = await response.json()
+        if (data.success) {
+          setSettings(data.settings)
+        }
+      } catch (error) {
+        console.error("Error fetching settings:", error)
+      } finally {
+        setLoadingSettings(false)
+      }
+    }
+
+    fetchSettings()
+  }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -65,39 +95,73 @@ export default function ContactPage() {
               </h2>
 
               <div className="space-y-6 mb-12">
-                <div className="flex items-start space-x-4">
-                  <div className="flex-shrink-0 w-12 h-12 bg-corsican-clay-100 rounded-lg flex items-center justify-center">
-                    <MapPin className="h-6 w-6 text-corsican-clay-600" />
+                {/* Adresse */}
+                {loadingSettings ? (
+                  <div className="flex items-start space-x-4">
+                    <div className="flex-shrink-0 w-12 h-12 bg-corsican-clay-100 rounded-lg flex items-center justify-center">
+                      <Loader2 className="h-5 w-5 text-corsican-clay-600 animate-spin" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-corsican-clay-900 mb-1">Chargement...</h3>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="font-semibold text-corsican-clay-900 mb-1">Adresse</h3>
-                    <p className="text-corsican-clay-700">
-                      Piscia Rossa
-                      <br />
-                      Corse
-                    </p>
-                  </div>
-                </div>
+                ) : (
+                  <>
+                    {settings?.address && (
+                      <div className="flex items-start space-x-4">
+                        <div className="flex-shrink-0 w-12 h-12 bg-corsican-clay-100 rounded-lg flex items-center justify-center">
+                          <MapPin className="h-6 w-6 text-corsican-clay-600" />
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-corsican-clay-900 mb-1">Adresse</h3>
+                          <p className="text-corsican-clay-700 whitespace-pre-line">{settings.address}</p>
+                        </div>
+                      </div>
+                    )}
 
-                <div className="flex items-start space-x-4">
-                  <div className="flex-shrink-0 w-12 h-12 bg-corsican-sea-100 rounded-lg flex items-center justify-center">
-                    <Phone className="h-6 w-6 text-corsican-sea-600" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-corsican-clay-900 mb-1">Téléphone</h3>
-                    <p className="text-corsican-clay-700">+33 X XX XX XX XX</p>
-                  </div>
-                </div>
+                    {settings?.contactPhone && (
+                      <div className="flex items-start space-x-4">
+                        <div className="flex-shrink-0 w-12 h-12 bg-corsican-sea-100 rounded-lg flex items-center justify-center">
+                          <Phone className="h-6 w-6 text-corsican-sea-600" />
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-corsican-clay-900 mb-1">Téléphone</h3>
+                          <a
+                            href={`tel:${settings.contactPhone.replace(/\s/g, '')}`}
+                            className="text-corsican-clay-700 hover:text-corsican-sea-600 transition-colors"
+                          >
+                            {settings.contactPhone}
+                          </a>
+                        </div>
+                      </div>
+                    )}
 
-                <div className="flex items-start space-x-4">
-                  <div className="flex-shrink-0 w-12 h-12 bg-corsican-maquis-100 rounded-lg flex items-center justify-center">
-                    <Mail className="h-6 w-6 text-corsican-maquis-600" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-corsican-clay-900 mb-1">Email</h3>
-                    <p className="text-corsican-clay-700">contact@ucasale.com</p>
-                  </div>
-                </div>
+                    {settings?.contactEmail && (
+                      <div className="flex items-start space-x-4">
+                        <div className="flex-shrink-0 w-12 h-12 bg-corsican-maquis-100 rounded-lg flex items-center justify-center">
+                          <Mail className="h-6 w-6 text-corsican-maquis-600" />
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-corsican-clay-900 mb-1">Email</h3>
+                          <a
+                            href={`mailto:${settings.contactEmail}`}
+                            className="text-corsican-clay-700 hover:text-corsican-maquis-600 transition-colors"
+                          >
+                            {settings.contactEmail}
+                          </a>
+                        </div>
+                      </div>
+                    )}
+
+                    {!settings?.address && !settings?.contactPhone && !settings?.contactEmail && !loadingSettings && (
+                      <div className="p-4 bg-corsican-sand-50 rounded-lg border border-corsican-sand-200">
+                        <p className="text-sm text-corsican-clay-600">
+                          Les informations de contact seront bientôt disponibles.
+                        </p>
+                      </div>
+                    )}
+                  </>
+                )}
               </div>
 
               {/* Horaires */}
