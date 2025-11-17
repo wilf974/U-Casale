@@ -1,7 +1,7 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { Save, Loader2, AlertCircle, CheckCircle, Globe, Mail, Phone, MapPin, Facebook, Instagram, Settings } from "lucide-react"
+import { useState, useEffect, useMemo } from "react"
+import { Save, Loader2, AlertCircle, CheckCircle, Globe, Mail, Phone, MapPin, Facebook, Instagram, Settings, Map } from "lucide-react"
 
 interface SiteSettings {
   id: string
@@ -108,6 +108,21 @@ export default function SiteSettingsPage() {
       [name]: type === "checkbox" ? (e.target as HTMLInputElement).checked : value,
     })
   }
+
+  // Mémoriser l'URL de la carte pour éviter de la recalculer à chaque render
+  const mapUrl = useMemo(() => {
+    const lat = parseFloat(formData.latitude)
+    const lon = parseFloat(formData.longitude)
+
+    if (isNaN(lat) || isNaN(lon)) {
+      return null
+    }
+
+    // OpenStreetMap embed
+    const zoom = 13
+    const bbox = `${lon - 0.01},${lat - 0.01},${lon + 0.01},${lat + 0.01}`
+    return `https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&marker=${lat},${lon}`
+  }, [formData.latitude, formData.longitude])
 
   if (loading) {
     return (
@@ -292,6 +307,40 @@ export default function SiteSettingsPage() {
                 </p>
               </div>
             </div>
+
+            {/* Prévisualisation de la carte */}
+            {mapUrl ? (
+              <div className="mt-4">
+                <div className="flex items-center space-x-2 mb-2">
+                  <Map className="h-4 w-4 text-corsican-clay-600" />
+                  <label className="text-sm font-medium text-corsican-clay-700">
+                    Prévisualisation de la carte
+                  </label>
+                </div>
+                <div className="rounded-lg overflow-hidden border-2 border-corsican-clay-300">
+                  <iframe
+                    src={mapUrl}
+                    width="100%"
+                    height="300"
+                    className="border-0"
+                    title="Prévisualisation de la carte"
+                  />
+                </div>
+                <p className="text-xs text-corsican-clay-500 mt-2">
+                  Cette carte se met à jour automatiquement quand vous modifiez les coordonnées
+                </p>
+              </div>
+            ) : formData.latitude || formData.longitude ? (
+              <div className="mt-4 p-4 bg-orange-50 rounded-lg border border-orange-200 flex items-start space-x-3">
+                <AlertCircle className="h-5 w-5 text-orange-600 mt-0.5 flex-shrink-0" />
+                <div className="text-sm text-orange-800">
+                  <p className="font-medium mb-1">Coordonnées invalides</p>
+                  <p>
+                    Vérifiez que vous avez entré des nombres valides pour la latitude et la longitude.
+                  </p>
+                </div>
+              </div>
+            ) : null}
           </div>
         </div>
 
