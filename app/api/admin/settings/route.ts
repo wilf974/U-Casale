@@ -52,6 +52,8 @@ export async function PATCH(req: Request) {
       contactEmail,
       contactPhone,
       address,
+      latitude,
+      longitude,
       facebookUrl,
       instagramUrl,
       maintenanceMode,
@@ -93,6 +95,8 @@ export async function PATCH(req: Request) {
     if (contactEmail !== undefined) updateData.contactEmail = contactEmail ? contactEmail.trim() : null
     if (contactPhone !== undefined) updateData.contactPhone = contactPhone ? contactPhone.trim() : null
     if (address !== undefined) updateData.address = address ? address.trim() : null
+    if (latitude !== undefined) updateData.latitude = latitude ? parseFloat(latitude) : null
+    if (longitude !== undefined) updateData.longitude = longitude ? parseFloat(longitude) : null
     if (facebookUrl !== undefined) updateData.facebookUrl = facebookUrl ? facebookUrl.trim() : null
     if (instagramUrl !== undefined) updateData.instagramUrl = instagramUrl ? instagramUrl.trim() : null
     if (maintenanceMode !== undefined) updateData.maintenanceMode = maintenanceMode

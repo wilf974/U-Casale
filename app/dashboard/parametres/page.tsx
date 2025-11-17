@@ -10,6 +10,8 @@ interface SiteSettings {
   contactEmail: string | null
   contactPhone: string | null
   address: string | null
+  latitude: number | null
+  longitude: number | null
   facebookUrl: string | null
   instagramUrl: string | null
   maintenanceMode: boolean
@@ -24,6 +26,8 @@ export default function SiteSettingsPage() {
     contactEmail: "",
     contactPhone: "",
     address: "",
+    latitude: "",
+    longitude: "",
     facebookUrl: "",
     instagramUrl: "",
     maintenanceMode: false,
@@ -50,6 +54,8 @@ export default function SiteSettingsPage() {
           contactEmail: data.settings.contactEmail || "",
           contactPhone: data.settings.contactPhone || "",
           address: data.settings.address || "",
+          latitude: data.settings.latitude?.toString() || "",
+          longitude: data.settings.longitude?.toString() || "",
           facebookUrl: data.settings.facebookUrl || "",
           instagramUrl: data.settings.instagramUrl || "",
           maintenanceMode: data.settings.maintenanceMode || false,
@@ -246,6 +252,44 @@ export default function SiteSettingsPage() {
                   className="w-full pl-11 pr-4 py-2 border border-corsican-clay-300 rounded-lg focus:ring-2 focus:ring-corsican-clay-500 focus:border-transparent"
                   placeholder="Route de Sartène, 20100 Sartène, Corse"
                 />
+              </div>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-corsican-clay-700 mb-2">
+                  Latitude
+                </label>
+                <input
+                  type="number"
+                  step="any"
+                  name="latitude"
+                  value={formData.latitude}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2 border border-corsican-clay-300 rounded-lg focus:ring-2 focus:ring-corsican-clay-500 focus:border-transparent"
+                  placeholder="41.6167"
+                />
+                <p className="text-xs text-corsican-clay-500 mt-1">
+                  Pour afficher une carte sur le site
+                </p>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-corsican-clay-700 mb-2">
+                  Longitude
+                </label>
+                <input
+                  type="number"
+                  step="any"
+                  name="longitude"
+                  value={formData.longitude}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2 border border-corsican-clay-300 rounded-lg focus:ring-2 focus:ring-corsican-clay-500 focus:border-transparent"
+                  placeholder="8.7372"
+                />
+                <p className="text-xs text-corsican-clay-500 mt-1">
+                  Utilisez Google Maps pour trouver les coordonnées
+                </p>
               </div>
             </div>
           </div>

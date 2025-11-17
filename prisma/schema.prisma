@@ -323,6 +323,8 @@ model SiteSettings {
   contactEmail      String?
   contactPhone      String?
   address           String?
+  latitude          Float?
+  longitude         Float?
   facebookUrl       String?
   instagramUrl      String?
   maintenanceMode   Boolean  @default(false)
