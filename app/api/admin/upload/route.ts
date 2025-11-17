@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
-import { writeFile, mkdir } from "fs/promises"
+import { writeFile, mkdir, chmod } from "fs/promises"
 import { existsSync } from "fs"
 import path from "path"
 import { auth } from "@/lib/auth"
@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
     // Créer le dossier uploads s'il n'existe pas
     const folderPath = path.join(UPLOAD_DIR, folder)
     if (!existsSync(folderPath)) {
-      await mkdir(folderPath, { recursive: true })
+      await mkdir(folderPath, { recursive: true, mode: 0o755 })
     }
 
     // Générer un nom de fichier unique
@@ -65,10 +65,14 @@ export async function POST(request: NextRequest) {
     const filepath = path.join(folderPath, filename)
     await writeFile(filepath, buffer)
 
+    // Définir les permissions pour que nginx puisse lire le fichier
+    await chmod(filepath, 0o644)
+
     console.log(`✅ Fichier uploadé avec succès:`)
     console.log(`   - Chemin: ${filepath}`)
     console.log(`   - Taille: ${buffer.length} bytes`)
     console.log(`   - Dossier: ${folder}`)
+    console.log(`   - Permissions: 644`)
 
     // Retourner l'URL publique
     const publicUrl = `/uploads/${folder}/${filename}`
