@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
-import { writeFile, mkdir, chmod } from "fs/promises"
+import { writeFile, mkdir, chmod, chown } from "fs/promises"
 import { existsSync } from "fs"
 import path from "path"
 import { auth } from "@/lib/auth"
@@ -65,14 +65,15 @@ export async function POST(request: NextRequest) {
     const filepath = path.join(folderPath, filename)
     await writeFile(filepath, buffer)
 
-    // Définir les permissions pour que nginx puisse lire le fichier
+    // Définir les permissions et le propriétaire pour que nginx puisse lire le fichier
     await chmod(filepath, 0o644)
+    await chown(filepath, 1001, 1001) // nextjs:nodejs (UID 1001, GID 1001)
 
     console.log(`✅ Fichier uploadé avec succès:`)
     console.log(`   - Chemin: ${filepath}`)
     console.log(`   - Taille: ${buffer.length} bytes`)
     console.log(`   - Dossier: ${folder}`)
-    console.log(`   - Permissions: 644`)
+    console.log(`   - Permissions: 644 (nextjs:nodejs)`)
 
     // Retourner l'URL publique
     const publicUrl = `/uploads/${folder}/${filename}`
