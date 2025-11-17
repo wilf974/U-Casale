@@ -77,10 +77,10 @@ function ReserverPageContent() {
 
   // Charger les disponibilités quand un gîte est sélectionné
   useEffect(() => {
-    if (selectedGiteSlug) {
+    if (selectedGiteSlug && availableGites.length > 0) {
       fetchDisponibilites()
     }
-  }, [selectedGiteSlug])
+  }, [selectedGiteSlug, availableGites])
 
   const fetchDisponibilites = async () => {
     if (!selectedGiteSlug) return
