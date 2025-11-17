@@ -1,5 +1,6 @@
 import Link from "next/link"
 import PublicLayout from "@/components/layout/PublicLayout"
+import DynamicMap from "@/components/map/DynamicMap"
 import { ArrowRight, Home, ShoppingBag, MapPin, Star } from "lucide-react"
 
 export default function HomePage() {
@@ -154,18 +155,7 @@ export default function HomePage() {
               Situé dans un cadre naturel exceptionnel, U Casale vous accueille dans l'un des plus beaux endroits de l'île de beauté.
             </p>
           </div>
-          <div className="bg-corsican-stone-100 rounded-2xl h-96 overflow-hidden shadow-lg">
-            <iframe
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d23303.0!2d8.7833!3d42.0000!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x12d6b0e7f9c8b5c3%3A0x5e4e9c9f9f9f9f9f!2sPiscia%20Rossa%2C%2020167%20Afa%2C%20France!5e0!3m2!1sfr!2sfr!4v1234567890123!5m2!1sfr!2sfr"
-              width="100%"
-              height="100%"
-              style={{ border: 0 }}
-              allowFullScreen
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-              title="Carte de Piscia Rossa, Afa, Corse"
-            />
-          </div>
+          <DynamicMap height="384px" className="bg-corsican-stone-100" />
         </div>
       </section>
 

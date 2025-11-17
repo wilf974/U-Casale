@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import PublicLayout from "@/components/layout/PublicLayout"
+import DynamicMap from "@/components/map/DynamicMap"
 import { MapPin, Phone, Mail, Send, MessageSquare } from "lucide-react"
 
 export default function ContactPage() {
@@ -232,19 +233,13 @@ export default function ContactPage() {
         </div>
       </section>
 
-      {/* Carte - Placeholder */}
+      {/* Carte */}
       <section className="py-20 bg-corsican-stone-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl font-serif font-bold text-corsican-clay-900 mb-8 text-center">
             Comment nous trouver
           </h2>
-          <div className="bg-corsican-stone-200 rounded-2xl h-96 flex items-center justify-center shadow-lg">
-            <div className="text-center text-corsican-stone-600">
-              <MapPin className="h-16 w-16 mx-auto mb-4" />
-              <p className="text-lg font-semibold">Carte interactive à intégrer</p>
-              <p className="text-sm">(Google Maps / OpenStreetMap)</p>
-            </div>
-          </div>
+          <DynamicMap height="384px" />
         </div>
       </section>
     </PublicLayout>
