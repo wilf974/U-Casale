@@ -334,6 +334,42 @@ model SiteSettings {
 }
 
 // ============================================
+// CONTENU PAGE D'ACCUEIL
+// ============================================
+
+model HomePageContent {
+  id              String   @id @default(cuid())
+
+  // Section Hero
+  heroTitle       String   @default("U Casale")
+  heroSubtitle    String   @default("Seni Production")
+  heroDescription String   @default("Découvrez l'authenticité corse à Piscia Rossa. Gîte de charme et produits artisanaux locaux.")
+
+  // Section Gîte
+  giteTitle       String   @default("Un havre de paix au cœur de la Corse")
+  giteDescription String   @default("Notre gîte authentique vous accueille à Piscia Rossa pour un séjour inoubliable. Profitez du calme de la nature corse dans un cadre chaleureux et convivial.")
+  giteFeatures    Json     @default("[\"Capacité jusqu'à 6 personnes\",\"Équipements modernes dans un cadre traditionnel\",\"Vue panoramique sur le maquis\"]")
+
+  // Section Boutique
+  boutiqueTitle       String @default("Produits artisanaux corses")
+  boutiqueDescription String @default("Seni Production vous propose une sélection de produits locaux authentiques. Vins corses, huiles d'olive, confitures maison et bien plus encore.")
+  boutiqueFeatures    Json   @default("[\"Production locale et artisanale\",\"Livraison possible dans toute la France\",\"Respect des traditions corses\"]")
+
+  // Section Localisation
+  locationTitle       String @default("Piscia Rossa, Corse")
+  locationDescription String @default("Situé dans un cadre naturel exceptionnel, U Casale vous accueille dans l'un des plus beaux endroits de l'île de beauté.")
+
+  // CTA Final
+  ctaTitle       String @default("Prêt pour votre séjour en Corse ?")
+  ctaDescription String @default("Réservez dès maintenant votre gîte à Piscia Rossa et découvrez l'authenticité corse.")
+
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+
+  @@map("home_page_content")
+}
+
+// ============================================
 // FAQ & TÉMOIGNAGES
 // ============================================
 

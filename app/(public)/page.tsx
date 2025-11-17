@@ -1,9 +1,74 @@
+"use client"
+
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import PublicLayout from "@/components/layout/PublicLayout"
 import DynamicMap from "@/components/map/DynamicMap"
-import { ArrowRight, Home, ShoppingBag, MapPin, Star } from "lucide-react"
+import { ArrowRight, Home, ShoppingBag, MapPin, Star, Loader2 } from "lucide-react"
+
+interface HomePageContent {
+  heroTitle: string
+  heroSubtitle: string
+  heroDescription: string
+  giteTitle: string
+  giteDescription: string
+  giteFeatures: string[]
+  boutiqueTitle: string
+  boutiqueDescription: string
+  boutiqueFeatures: string[]
+  locationTitle: string
+  locationDescription: string
+  ctaTitle: string
+  ctaDescription: string
+}
 
 export default function HomePage() {
+  const [content, setContent] = useState<HomePageContent | null>(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchContent = async () => {
+      try {
+        const response = await fetch("/api/homepage")
+        const data = await response.json()
+
+        if (data.success && data.content) {
+          setContent({
+            heroTitle: data.content.heroTitle || "",
+            heroSubtitle: data.content.heroSubtitle || "",
+            heroDescription: data.content.heroDescription || "",
+            giteTitle: data.content.giteTitle || "",
+            giteDescription: data.content.giteDescription || "",
+            giteFeatures: Array.isArray(data.content.giteFeatures) ? data.content.giteFeatures : [],
+            boutiqueTitle: data.content.boutiqueTitle || "",
+            boutiqueDescription: data.content.boutiqueDescription || "",
+            boutiqueFeatures: Array.isArray(data.content.boutiqueFeatures) ? data.content.boutiqueFeatures : [],
+            locationTitle: data.content.locationTitle || "",
+            locationDescription: data.content.locationDescription || "",
+            ctaTitle: data.content.ctaTitle || "",
+            ctaDescription: data.content.ctaDescription || "",
+          })
+        }
+      } catch (error) {
+        console.error("Error fetching homepage content:", error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchContent()
+  }, [])
+
+  if (loading) {
+    return (
+      <PublicLayout>
+        <div className="flex items-center justify-center min-h-screen">
+          <Loader2 className="h-12 w-12 animate-spin text-corsican-clay-600" />
+        </div>
+      </PublicLayout>
+    )
+  }
+
   return (
     <PublicLayout>
       {/* Hero Section */}
@@ -17,13 +82,13 @@ export default function HomePage() {
               </span>
             </div>
             <h1 className="text-4xl md:text-6xl font-serif font-bold text-corsican-clay-900 mb-6">
-              U Casale
+              {content?.heroTitle || "U Casale"}
               <span className="block text-2xl md:text-3xl text-corsican-maquis-700 mt-2">
-                Seni Production
+                {content?.heroSubtitle || "Seni Production"}
               </span>
             </h1>
             <p className="text-xl md:text-2xl text-corsican-clay-700 mb-8 max-w-3xl mx-auto leading-relaxed">
-              Découvrez l'authenticité corse à Piscia Rossa. Gîte de charme et produits artisanaux locaux.
+              {content?.heroDescription || "Découvrez l'authenticité corse à Piscia Rossa. Gîte de charme et produits artisanaux locaux."}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
@@ -54,25 +119,35 @@ export default function HomePage() {
                 <span className="font-semibold uppercase text-sm tracking-wider">Le Gîte</span>
               </div>
               <h2 className="text-3xl md:text-4xl font-serif font-bold text-corsican-clay-900 mb-6">
-                Un havre de paix au cœur de la Corse
+                {content?.giteTitle || "Un havre de paix au cœur de la Corse"}
               </h2>
               <p className="text-lg text-corsican-clay-700 mb-6 leading-relaxed">
-                Notre gîte authentique vous accueille à Piscia Rossa pour un séjour inoubliable.
-                Profitez du calme de la nature corse dans un cadre chaleureux et convivial.
+                {content?.giteDescription || "Notre gîte authentique vous accueille à Piscia Rossa pour un séjour inoubliable. Profitez du calme de la nature corse dans un cadre chaleureux et convivial."}
               </p>
               <ul className="space-y-3 mb-8">
-                <li className="flex items-center text-corsican-clay-700">
-                  <Star className="h-5 w-5 text-corsican-sand-500 mr-3 flex-shrink-0" />
-                  Capacité jusqu'à 6 personnes
-                </li>
-                <li className="flex items-center text-corsican-clay-700">
-                  <Star className="h-5 w-5 text-corsican-sand-500 mr-3 flex-shrink-0" />
-                  Équipements modernes dans un cadre traditionnel
-                </li>
-                <li className="flex items-center text-corsican-clay-700">
-                  <Star className="h-5 w-5 text-corsican-sand-500 mr-3 flex-shrink-0" />
-                  Vue panoramique sur le maquis
-                </li>
+                {content?.giteFeatures && content.giteFeatures.length > 0 ? (
+                  content.giteFeatures.map((feature, index) => (
+                    <li key={index} className="flex items-center text-corsican-clay-700">
+                      <Star className="h-5 w-5 text-corsican-sand-500 mr-3 flex-shrink-0" />
+                      {feature}
+                    </li>
+                  ))
+                ) : (
+                  <>
+                    <li className="flex items-center text-corsican-clay-700">
+                      <Star className="h-5 w-5 text-corsican-sand-500 mr-3 flex-shrink-0" />
+                      Capacité jusqu'à 6 personnes
+                    </li>
+                    <li className="flex items-center text-corsican-clay-700">
+                      <Star className="h-5 w-5 text-corsican-sand-500 mr-3 flex-shrink-0" />
+                      Équipements modernes dans un cadre traditionnel
+                    </li>
+                    <li className="flex items-center text-corsican-clay-700">
+                      <Star className="h-5 w-5 text-corsican-sand-500 mr-3 flex-shrink-0" />
+                      Vue panoramique sur le maquis
+                    </li>
+                  </>
+                )}
               </ul>
               <Link
                 href="/gite"
@@ -108,25 +183,35 @@ export default function HomePage() {
                 <span className="font-semibold uppercase text-sm tracking-wider">La Boutique</span>
               </div>
               <h2 className="text-3xl md:text-4xl font-serif font-bold text-corsican-clay-900 mb-6">
-                Produits artisanaux corses
+                {content?.boutiqueTitle || "Produits artisanaux corses"}
               </h2>
               <p className="text-lg text-corsican-clay-700 mb-6 leading-relaxed">
-                Seni Production vous propose une sélection de produits locaux authentiques.
-                Vins corses, huiles d'olive, confitures maison et bien plus encore.
+                {content?.boutiqueDescription || "Seni Production vous propose une sélection de produits locaux authentiques. Vins corses, huiles d'olive, confitures maison et bien plus encore."}
               </p>
               <ul className="space-y-3 mb-8">
-                <li className="flex items-center text-corsican-clay-700">
-                  <Star className="h-5 w-5 text-corsican-sand-500 mr-3 flex-shrink-0" />
-                  Production locale et artisanale
-                </li>
-                <li className="flex items-center text-corsican-clay-700">
-                  <Star className="h-5 w-5 text-corsican-sand-500 mr-3 flex-shrink-0" />
-                  Livraison possible dans toute la France
-                </li>
-                <li className="flex items-center text-corsican-clay-700">
-                  <Star className="h-5 w-5 text-corsican-sand-500 mr-3 flex-shrink-0" />
-                  Respect des traditions corses
-                </li>
+                {content?.boutiqueFeatures && content.boutiqueFeatures.length > 0 ? (
+                  content.boutiqueFeatures.map((feature, index) => (
+                    <li key={index} className="flex items-center text-corsican-clay-700">
+                      <Star className="h-5 w-5 text-corsican-sand-500 mr-3 flex-shrink-0" />
+                      {feature}
+                    </li>
+                  ))
+                ) : (
+                  <>
+                    <li className="flex items-center text-corsican-clay-700">
+                      <Star className="h-5 w-5 text-corsican-sand-500 mr-3 flex-shrink-0" />
+                      Production locale et artisanale
+                    </li>
+                    <li className="flex items-center text-corsican-clay-700">
+                      <Star className="h-5 w-5 text-corsican-sand-500 mr-3 flex-shrink-0" />
+                      Livraison possible dans toute la France
+                    </li>
+                    <li className="flex items-center text-corsican-clay-700">
+                      <Star className="h-5 w-5 text-corsican-sand-500 mr-3 flex-shrink-0" />
+                      Respect des traditions corses
+                    </li>
+                  </>
+                )}
               </ul>
               <Link
                 href="/boutique"
@@ -149,10 +234,10 @@ export default function HomePage() {
               <span className="font-semibold uppercase text-sm tracking-wider">Localisation</span>
             </div>
             <h2 className="text-3xl md:text-4xl font-serif font-bold text-corsican-clay-900 mb-4">
-              Piscia Rossa, Corse
+              {content?.locationTitle || "Piscia Rossa, Corse"}
             </h2>
             <p className="text-lg text-corsican-clay-700 max-w-2xl mx-auto">
-              Situé dans un cadre naturel exceptionnel, U Casale vous accueille dans l'un des plus beaux endroits de l'île de beauté.
+              {content?.locationDescription || "Situé dans un cadre naturel exceptionnel, U Casale vous accueille dans l'un des plus beaux endroits de l'île de beauté."}
             </p>
           </div>
           <DynamicMap height="384px" className="bg-corsican-stone-100" />
@@ -163,10 +248,10 @@ export default function HomePage() {
       <section className="py-20 bg-gradient-to-r from-corsican-clay-600 to-corsican-clay-700">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl md:text-4xl font-serif font-bold text-white mb-6">
-            Prêt pour votre séjour en Corse ?
+            {content?.ctaTitle || "Prêt pour votre séjour en Corse ?"}
           </h2>
           <p className="text-xl text-corsican-clay-100 mb-8">
-            Réservez dès maintenant votre gîte à Piscia Rossa et découvrez l'authenticité corse.
+            {content?.ctaDescription || "Réservez dès maintenant votre gîte à Piscia Rossa et découvrez l'authenticité corse."}
           </p>
           <Link
             href="/gite/reserver"
