@@ -137,8 +137,13 @@ export default function EditHomePagePage() {
 
     const setUploading = section === "giteImage" ? setUploadingGiteImage : setUploadingBoutiqueImage
 
+    // Réinitialiser les erreurs
+    setError("")
+
     try {
       setUploading(true)
+      console.log(`📤 Upload en cours: ${file.name} (${(file.size / 1024).toFixed(2)} KB)`)
+
       const formData = new FormData()
       formData.append("file", file)
       formData.append("folder", "general")
@@ -148,19 +153,31 @@ export default function EditHomePagePage() {
         body: formData,
       })
 
+      console.log(`📥 Réponse reçue: status ${response.status}`)
+
+      if (!response.ok) {
+        const errorText = await response.text()
+        console.error(`❌ Erreur HTTP ${response.status}:`, errorText)
+        setError(`Erreur HTTP ${response.status}: ${errorText}`)
+        return
+      }
+
       const data = await response.json()
+      console.log("📦 Données reçues:", data)
 
       if (data.success && data.url) {
+        console.log(`✅ Image uploadée avec succès: ${data.url}`)
         setFormData((prev) => ({
           ...prev,
           [section]: data.url,
         }))
       } else {
+        console.error("❌ Erreur dans la réponse:", data.error)
         setError(data.error || "Erreur lors de l'upload")
       }
     } catch (error) {
-      console.error("Error uploading image:", error)
-      setError("Erreur lors de l'upload de l'image")
+      console.error("❌ Erreur lors de l'upload:", error)
+      setError(`Erreur lors de l'upload de l'image: ${error instanceof Error ? error.message : 'Erreur inconnue'}`)
     } finally {
       setUploading(false)
     }
